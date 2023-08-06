@@ -1,4 +1,4 @@
-import MainLayout from "@/components/layout/MainLayout/MainLayout"
+import MainLayout from "@/components/layout/MainLayout"
 
 export default function Orders() {
   return(

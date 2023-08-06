@@ -1,8 +1,10 @@
-import MainLayout from "@/components/layout/MainLayout/MainLayout"
+import MainLayout from "@/components/layout/MainLayout";
+
+import styles from "./index.module.scss";
 
 export default function Dashboard() {
   return(
-    <div>
+    <div className={styles.container}>
       This is the dashboard page
     </div>
   )

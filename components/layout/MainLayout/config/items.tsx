@@ -1,10 +1,10 @@
 const items: any[] = [
   {
-    label: "dashboard",
+    label: "Dashboard",
     path: "/dashboard",
   },
   {
-    label: "orders",
+    label: "Orders",
     path: "/orders"
   }
 ]
