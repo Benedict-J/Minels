@@ -1,22 +1,23 @@
 import { Button, Table } from "antd";
+import { ColumnsType } from "antd/es/table";
 
 interface InTableProps {
   api?: string;
-  columns?: {};
+  columns?: ColumnsType ;
   data?: [];
 }
 
 export default function InTable(props: InTableProps) {
   const {
     api = null,
-    columns = {},
+    columns = [],
     data = [],
   } = props;
 
   return (
     <>
       <Table 
-        
+        columns={columns}
       />
     </>
   )
