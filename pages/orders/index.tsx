@@ -36,7 +36,7 @@ export default function Orders() {
         <Col span={20}>
           <h2>Orders</h2>
         </Col>
-        <Col span={4} className={styles.button_container}>
+        <Col span="auto" className={styles.button_container}>
           <Button>
             <PlusOutlined /> Add Order
           </Button>

@@ -1,3 +1,17 @@
 body {
   margin: 0;
 }
+
+.ant-menu-item:hover:not(.ant-menu-item-selected) {
+  font-weight: 600;
+}
+
+.ant-menu-item:active {
+  background: #f5f5f5 !important;
+}
+
+.ant-menu-item-selected {
+  background: #f5f5f5 !important;
+  color: #001529 !important;
+  font-weight: 700;
+}

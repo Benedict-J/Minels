@@ -6,6 +6,10 @@ const items: any[] = [
   {
     label: "Orders",
     path: "/orders"
+  },
+  {
+    label: "Products",
+    path: "/products"
   }
 ]
 

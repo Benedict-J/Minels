@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuProps } from "antd";
+import { ConfigProvider, Layout, Menu, MenuProps } from "antd";
 import { useRouter } from "next/router";
 import items from "./config/items";
 

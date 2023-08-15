@@ -1,0 +1,24 @@
+.container {
+  height: 100%;
+  background-color: white;
+  border-radius: 20px;
+  padding: 2rem;
+
+  .header {
+    align-items: center;
+
+    .button_container {
+      justify-content: right;
+    }
+  }
+}
+
+.input_number {
+  width: 100%;
+}
+
+.modal_action {
+  display: flex;
+  justify-content: right;
+  column-gap: 8px;
+}
