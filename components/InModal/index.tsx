@@ -1,12 +1,14 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { PlusOutlined,LoadingOutlined } from "@ant-design/icons";
+import { Button, Modal, Spin } from "antd";
 import { useState } from "react";
+import styles from "./index.module.scss";
 
 interface InModalProps {
-  title: string,
+  title: string
   open: boolean
   handleOpen: () => void | undefined
   handleClose: () => void | undefined
+  loading: boolean
   children?: React.ReactNode,
 }
 
@@ -16,6 +18,7 @@ export default function InModal(props: InModalProps) {
     open = undefined,
     handleOpen = () => {},
     handleClose = () => {},
+    loading = false,
     children
   } = props;
 
@@ -33,7 +36,9 @@ export default function InModal(props: InModalProps) {
         }}
         footer={false}
       >
-        {children}
+        <Spin className={styles.spinner} indicator={<LoadingOutlined />} size="large" spinning={loading}>
+          {children}
+        </Spin>
       </Modal>
     </>
   )

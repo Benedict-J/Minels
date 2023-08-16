@@ -7,7 +7,8 @@ import {
   collection,
   setDoc,
   doc,
-  addDoc
+  addDoc,
+  getDoc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -30,6 +31,20 @@ export const loadProducts = async () => {
     data.key = index;
     return data;
   });
+}
+
+export const getProduct = async (id: string) => {
+  const docRef = doc(db, "products", id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    let product = docSnap.data();
+    product.id = docSnap.id;
+    
+    return product;
+  } else {
+    
+  }
 }
 
 export const createProduct = async (values: any) => {

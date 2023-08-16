@@ -5,19 +5,42 @@ import InTable from "@/components/InTable";
 
 import styles from "./index.module.scss";
 import InModal from "@/components/InModal";
-import { createProduct, loadProducts } from "@/firebase/init-firebase";
+import { createProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
 import { useState } from "react";
 
 export default function Products() {
+  const [form] = Form.useForm();
+  const [id, setId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   
   const handleFinish = (values: any) => {
+    setLoading(true);
     createProduct(values);
+    setId(null);
+    setLoading(false);
+    setOpen(false);
   }
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (e?: any, id?: string): void => { 
+    if (id) {
+      setLoading(true)
+      setId(id);
 
-  const handleClose = () => setOpen(false);
+      getProduct(id)
+        .then(res => {
+          form.setFieldsValue(res);
+        })
+        .finally(() => setLoading(false));
+    }
+
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setId(null);
+    setOpen(false);
+  }
 
   const columns = [
     {
@@ -38,16 +61,11 @@ export default function Products() {
       width: 100
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price"
-    },
-    {
       title: "Action",
       width: 200,
-      render: () => (
+      render: (text: any) => (
         <>
-          <Button type="link" onClick={handleOpen}>Update</Button>
+          <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Update</Button>
           <Button danger>Delete</Button>
         </>
       )
@@ -61,13 +79,20 @@ export default function Products() {
           <h2>Products</h2>
         </Col>
         <Col span="auto" className={styles.button_container}>
-          <InModal title="Add Product" open={open} handleOpen={handleOpen} handleClose={handleClose}>
+          <InModal 
+            title="Add Product" 
+            open={open} 
+            handleOpen={handleOpen} 
+            handleClose={handleClose} 
+            loading={loading}
+          >
             <Form
               labelCol={{ span: 4 }}
               colon={false}
               onFinish={handleFinish}
               labelAlign="left"
               size="small"
+              form={form}
             >
               <Form.Item
                 label="ID"
@@ -78,20 +103,25 @@ export default function Products() {
               <Form.Item
                 label="Name"
                 name="name"
+                rules={[{ required: true, message: "Name field cannot be empty" }]}
               >
                 <Input />
               </Form.Item>
               <Form.Item
                 label="Quantity"
                 name="quantity"
+                initialValue={0}
+                rules={[{ min: 0, type: 'number', message: "Quantity must be more than or equal to 0" }]}
               >
-                <InputNumber min={0} controls={false} defaultValue={0} className={styles.input_number} />
+                <InputNumber min={0} controls={false} className={styles.input_number} readOnly={id !== null} />
               </Form.Item>
               <Form.Item
                 label="Price"
                 name="price"
+                initialValue={0}
+                rules={[{ min: 0, type: 'number', message: "Price must be more than or equal to 0" }]}
               >
-                <InputNumber min={0} controls={false} defaultValue={0} className={styles.input_number} />
+                <InputNumber min={0} controls={false} className={styles.input_number} />
               </Form.Item>
               <div className={styles.modal_action}>
                 <Button danger size="middle">Cancel</Button>
