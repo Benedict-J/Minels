@@ -15,3 +15,13 @@ body {
   color: #001529 !important;
   font-weight: 700;
 }
+
+.ant-pagination-item-active {
+  background-color: #001529 !important;
+  border: none !important;
+}
+
+.ant-pagination-item-active a {
+  color: white !important;
+  font-weight: 600 !important;
+}

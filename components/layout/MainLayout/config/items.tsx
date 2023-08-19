@@ -2,14 +2,17 @@ const items: any[] = [
   {
     label: "Dashboard",
     path: "/dashboard",
+    key: "/dashboard",
   },
   {
     label: "Orders",
-    path: "/orders"
+    path: "/orders",
+    key: "/orders",
   },
   {
     label: "Products",
-    path: "/products"
+    path: "/products",
+    key: "/products",
   }
 ]
 

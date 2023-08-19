@@ -1,37 +1,48 @@
 import MainLayout from "@/components/layout/MainLayout"
-import { Button, Col, Form, Input, InputNumber, Row } from "antd";
+import { Button, Col, Form, Input, InputNumber, Row, message } from "antd";
 
-import InTable from "@/components/InTable";
+import InTable, { DataTableRef } from "@/components/InTable";
 
 import styles from "./index.module.scss";
 import InModal from "@/components/InModal";
-import { createProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
-import { useState } from "react";
+import { createProduct, deleteProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
+import { useRef, useState } from "react";
+
+const { Search } = Input;
 
 export default function Products() {
   const [form] = Form.useForm();
+  const tableRef = useRef<DataTableRef>(null);
   const [id, setId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
   const [open, setOpen] = useState(false);
+  const [messageApi, contextHandler] = message.useMessage();
   
   const handleFinish = (values: any) => {
-    setLoading(true);
+    setLoadingForm(true);
     createProduct(values);
-    setId(null);
-    setLoading(false);
-    setOpen(false);
+
+    if (id) {
+      messageApi.success("Product has been successfully updated");
+    } else {
+      messageApi.success("Product has been successfully created");
+    }
+
+    setLoadingForm(false);
+    handleClose();
+    tableRef.current?.reload();
   }
 
   const handleOpen = (e?: any, id?: string): void => { 
     if (id) {
-      setLoading(true)
+      setLoadingForm(true)
       setId(id);
 
       getProduct(id)
         .then(res => {
           form.setFieldsValue(res);
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoadingForm(false));
     }
 
     setOpen(true);
@@ -40,6 +51,16 @@ export default function Products() {
   const handleClose = () => {
     setId(null);
     setOpen(false);
+  }
+
+  const handleDelete = (e: any, id: string) => {
+    deleteProduct(id);
+    tableRef.current?.reload();
+    messageApi.success("Product has been successfully deleted");
+  }
+
+  const handleSearch = (value: string) => {
+    tableRef.current?.setFilter((prev: any) => ({ ...prev, search: value }))
   }
 
   const columns = [
@@ -66,7 +87,7 @@ export default function Products() {
       render: (text: any) => (
         <>
           <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Update</Button>
-          <Button danger>Delete</Button>
+          <Button danger onClick={(e) => handleDelete(e, text.id)}>Delete</Button>
         </>
       )
     }
@@ -74,17 +95,18 @@ export default function Products() {
 
   return(
     <div className={styles.container}>
+      <h2>Products</h2>
       <Row className={styles.header}>
-        <Col span={20}>
-          <h2>Products</h2>
+        <Col span={19}>
+          <Search placeholder="Search Products" style={{ width: "200px" }} onSearch={handleSearch} />
         </Col>
-        <Col span="auto" className={styles.button_container}>
+        <Col span="5" className={styles.button_container}>
           <InModal 
             title="Add Product" 
             open={open} 
             handleOpen={handleOpen} 
             handleClose={handleClose} 
-            loading={loading}
+            loading={loadingForm}
           >
             <Form
               labelCol={{ span: 4 }}
@@ -134,6 +156,7 @@ export default function Products() {
       <InTable 
         api={loadProducts}
         columns={columns}
+        ref={tableRef}
       />
     </div>
   )

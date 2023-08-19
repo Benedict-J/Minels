@@ -8,7 +8,14 @@ import {
   setDoc,
   doc,
   addDoc,
-  getDoc
+  getDoc,
+  deleteDoc,
+  getCountFromServer,
+  where,
+  query,
+  startAt,
+  limit,
+  orderBy
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -23,14 +30,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export const loadProducts = async () => {
-  const querySnapshot = await getDocs(collection(db, "products"));
-  return querySnapshot.docs.map((doc, index) => {
-    const data = doc.data();
-    data.id = doc.id;
-    data.key = index;
-    return data;
-  });
+export const loadProducts = async (
+  search: string = "", 
+  size: number = 10,
+  start: string | null = null,
+) => {
+  const productCol = collection(db, "products");
+
+  search = search.toLowerCase();
+
+  const q = query(productCol, 
+    where("name_lower", ">=", search), 
+    where("name_lower", "<=", search + "\uf8ff"),
+    orderBy("name_lower"),
+    startAt(start),
+    limit(size)
+  );
+
+  const querySnapshot = await getDocs(q);
+  const countSnapshot = await getCountFromServer(productCol);
+  const lastVisible = querySnapshot.docs[querySnapshot.size - 1];
+  
+  return {
+    data: querySnapshot.docs.map((doc, index) => {
+      const data = doc.data();
+      data.id = doc.id;
+      data.key = index;
+      return data;
+    }),
+    next: lastVisible,
+    count: countSnapshot.data().count
+  }
 }
 
 export const getProduct = async (id: string) => {
@@ -53,8 +83,13 @@ export const createProduct = async (values: any) => {
   } else {
     await addDoc(collection(db, "products"), {
       name: values.name,
+      name_lower: values.name.toLowerCase(),
       quantity: values.quantity || 0,
       price: values.price || 0
     });
   }
+}
+
+export const deleteProduct = async (id: string) => {
+  await deleteDoc(doc(db, "products", id));
 }
