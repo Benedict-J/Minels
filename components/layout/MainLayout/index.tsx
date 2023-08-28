@@ -17,8 +17,8 @@ export default function MainLayout({ children }: { children: React.ReactNode } )
   }
 
   return (
-    <Layout>
-      <Header style={{ display: 'flex', alignItems: 'center' }}>
+    <Layout style={{ height: '100vh' }}>
+      <Header style={{ display: 'flex', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1 }}>
         <div className="demo-logo" />
       </Header>
       <Layout>

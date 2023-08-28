@@ -49,6 +49,7 @@ export default function Products() {
   };
 
   const handleClose = () => {
+    form.resetFields();
     setId(null);
     setOpen(false);
   }
@@ -95,6 +96,7 @@ export default function Products() {
 
   return(
     <div className={styles.container}>
+      {contextHandler}
       <h2>Products</h2>
       <Row className={styles.header}>
         <Col span={19}>

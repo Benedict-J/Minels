@@ -1,14 +1,35 @@
 .container {
-  height: 100%;
   background-color: white;
   border-radius: 20px;
-  padding: 2rem;
+  padding-inline: 2rem;
+  padding-block: 0.5rem;
 
   .header {
     align-items: center;
+    margin-bottom: 1rem;
 
     .button_container {
+      display: flex !important;
       justify-content: right;
     }
   }
+}
+
+.input_number {
+  width: 100%;
+}
+
+.button {
+  background-color: #001529 !important;
+}
+
+.button:hover {
+  background-color: #0015293c !important;
+}
+
+.modal_action {
+  display: flex;
+  justify-content: right;
+  column-gap: 8px;
+  margin-top: 24px;
 }

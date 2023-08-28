@@ -1,0 +1,46 @@
+.add_button {
+  background-color: #001529 !important;
+}
+
+.add_button:hover {
+  background-color: #0015293c !important;
+}
+
+.table {
+  width: 100%;
+  border-spacing: 8px;
+
+  td,
+  th {
+    text-align: left;
+  }
+
+  td {
+    margin-bottom: 10px;
+  }
+
+  .quantity_column,
+  .price_column {
+    width: 100px;
+    text-align: left;
+  }
+
+  .name_field_column {
+    width: 100%;
+  }
+
+  .action_column {
+    width: 50px;
+    text-align: center;
+  }
+
+  .action_column_item {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.spin_container {
+  display: flex;
+  justify-content: center;
+}

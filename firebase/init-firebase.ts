@@ -15,8 +15,15 @@ import {
   query,
   startAt,
   limit,
-  orderBy
+  orderBy,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
+  writeBatch,
+  runTransaction
 } from "firebase/firestore";
+
+import moment from "moment";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -33,24 +40,27 @@ const db = getFirestore(app);
 export const loadProducts = async (
   search: string = "", 
   size: number = 10,
-  start: string | null = null,
+  start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
   const productCol = collection(db, "products");
 
   search = search.toLowerCase();
 
-  const q = query(productCol, 
+  let q = query(productCol, 
     where("name_lower", ">=", search), 
     where("name_lower", "<=", search + "\uf8ff"),
     orderBy("name_lower"),
-    startAt(start),
     limit(size)
   );
 
+  if (start) {
+    q = query(q, startAfter(start));
+  }
+
   const querySnapshot = await getDocs(q);
   const countSnapshot = await getCountFromServer(productCol);
-  const lastVisible = querySnapshot.docs[querySnapshot.size - 1];
-  
+  const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    
   return {
     data: querySnapshot.docs.map((doc, index) => {
       const data = doc.data();
@@ -92,4 +102,71 @@ export const createProduct = async (values: any) => {
 
 export const deleteProduct = async (id: string) => {
   await deleteDoc(doc(db, "products", id));
+}
+
+export const loadOrders = async (
+  search: string = "", 
+  size: number = 10,
+  start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
+) => {
+  const productCol = collection(db, "orders");
+
+  search = search.toLowerCase();
+
+  let q = query(productCol, 
+    // where("id", ">=", search), 
+    // where("id", "<=", search + "\uf8ff"),
+    // orderBy("id"),
+    limit(size)
+  );
+
+  if (start) {
+    q = query(q, startAfter(start));
+  }
+
+  const querySnapshot = await getDocs(q);
+  const countSnapshot = await getCountFromServer(productCol);
+  const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    
+  return {
+    data: querySnapshot.docs.map((doc, index) => {
+      const data = doc.data();
+      data.id = doc.id;
+      data.key = index;
+      return data;
+    }),
+    next: lastVisible,
+    count: countSnapshot.data().count
+  }
+}
+
+export const createOrder = async (values: any) => {
+  await addDoc(collection(db, "orders"), {
+    items: values.items,
+    created_at: moment().endOf('day').valueOf()
+  })
+
+  values.items.map(async (item: any) => {
+    await runTransaction(db, async (transaction) => {
+      const ref = doc(db, "products", item.id);
+      const itemDoc = await transaction.get(ref);
+      if (!itemDoc.exists()) {
+        throw "Document does not exists!";
+      }
+
+      const newQuantity = itemDoc.data().quantity - item.quantity;
+      transaction.update(ref, { quantity: newQuantity });
+    })
+  })
+}
+
+// Dashboard APIs
+
+export const generateTotalRevenue = async () => {
+  const ordersCollection = collection(db, "orders");
+
+  // const currentDate = moment()
+  // const prevMonthDate = currentDate.subtract(1, 'months')
+
+  // let q = query(orderCollection, where('created_at', '<=', currentDate.))
 }
