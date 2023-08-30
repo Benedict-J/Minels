@@ -13,7 +13,12 @@ const items: any[] = [
     label: "Products",
     path: "/products",
     key: "/products",
+  },
+  {
+    label: "Customers",
+    path: "/customers",
+    key: "/customers",
   }
-]
+];
 
 export default items;

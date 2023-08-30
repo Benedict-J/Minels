@@ -7,17 +7,13 @@ import styles from "./styles.module.scss";
 
 interface InTableProps {
   api?: Function;
-  columns?: ColumnsType<AnyObject> ;
+  columns?: ColumnsType<AnyObject>;
   data?: [];
 }
 
 export default forwardRef(function InTable(props: InTableProps, ref) {
   const [loading, setLoading] = useState(false);
-  const {
-    api = null,
-    columns = [],
-    data = [],
-  } = props;
+  const { api = null, columns = [], data = [] } = props;
   const [list, setList] = useState(data);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -30,13 +26,13 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
   const reload = async (isNext?: boolean) => {
     setLoading(true);
     if (api) {
-      const res = await api(filter.search, size, isNext? nextPage : null);
+      const res = await api(filter.search, size, isNext ? nextPage : null);
       setList(res.data);
       setNextPage(res.next);
       setCount(res.count);
     }
     setLoading(false);
-  }
+  };
 
   const handlePageChange = (pageNo: number, pageSize: number) => {
     setPage(pageNo);
@@ -47,41 +43,41 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
     } else {
       reload(true);
     }
-  }
+  };
 
   useEffect(() => {
     setNextPage(null);
     reload();
-  }, [filter])
+  }, [filter]);
 
-  console.log('list', list)
+  console.log("list", list);
 
   useImperativeHandle(ref, () => ({
     reload,
-    setFilter
-  }))
+    setFilter,
+  }));
 
   return (
     <>
-      <Table 
+      <Table
         columns={columns}
         dataSource={list}
         pagination={false}
         loading={loading}
         size="small"
       />
-      <Pagination 
-        className={styles.pagination} 
-        size="small" 
-        total={count} 
-        current={page} 
+      <Pagination
+        className={styles.pagination}
+        size="small"
+        total={count}
+        current={page}
         onChange={handlePageChange}
       />
     </>
-  )
+  );
 });
 
 export type DataTableRef = {
   reload: () => void;
   setFilter: (val: any) => any;
-}
+};

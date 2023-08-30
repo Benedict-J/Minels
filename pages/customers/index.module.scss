@@ -1,4 +1,5 @@
 .container {
+  height: 100%;
   background-color: white;
   border-radius: 20px;
   padding-inline: 2rem;
@@ -10,20 +11,8 @@
 
     .button_container {
       display: flex !important;
+      width: fit-content;
       justify-content: right;
-    }
-  }
-}
-
-.order_summary {
-  margin-block: 20px;
-  width: 100%;
-
-  .summary_details {
-    width: 100% !important;
-
-    input {
-      text-align: right;
     }
   }
 }
@@ -32,17 +21,8 @@
   width: 100%;
 }
 
-.button {
-  background-color: #001529 !important;
-}
-
-.button:hover {
-  background-color: #0015293c !important;
-}
-
 .modal_action {
   display: flex;
   justify-content: right;
   column-gap: 8px;
-  margin-top: 24px;
 }

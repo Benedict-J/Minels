@@ -7,22 +7,38 @@ import { useState } from "react";
 
 const { Header, Content, Sider } = Layout;
 
-export default function MainLayout({ children }: { children: React.ReactNode } ) {
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const [selectedMenu, setSelectedMenu] = useState<string[]>();
 
-  const handleMenuItemClick: MenuProps['onClick'] = ({ item }: { item: any }) => {
+  const handleMenuItemClick: MenuProps["onClick"] = ({
+    item,
+  }: {
+    item: any;
+  }) => {
     setSelectedMenu(item.props.key);
     router.push(item.props.path);
-  }
+  };
 
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1 }}>
+    <Layout style={{ height: "100vh" }}>
+      <Header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+        }}
+      >
         <div className="demo-logo" />
       </Header>
       <Layout>
-        <Sider className={styles.sider}>
+        <Sider className={styles.sider} breakpoint="lg" collapsedWidth="0">
           <Menu
             mode="inline"
             onClick={handleMenuItemClick}
@@ -31,11 +47,9 @@ export default function MainLayout({ children }: { children: React.ReactNode } )
           />
         </Sider>
         <Layout>
-          <Content className={styles.main}>
-            {children}
-          </Content>
+          <Content className={styles.main}>{children}</Content>
         </Layout>
       </Layout>
     </Layout>
-  )
+  );
 }

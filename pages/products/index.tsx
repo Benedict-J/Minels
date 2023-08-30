@@ -7,6 +7,7 @@ import styles from "./index.module.scss";
 import InModal from "@/components/InModal";
 import { createProduct, deleteProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
 import { useRef, useState } from "react";
+import { formatAmountCurrency } from "@/utils/format";
 
 const { Search } = Input;
 
@@ -135,17 +136,35 @@ export default function Products() {
                 label="Quantity"
                 name="quantity"
                 initialValue={0}
-                rules={[{ min: 0, type: 'number', message: "Quantity must be more than or equal to 0" }]}
+                rules={id !== null? [] : [{ min: 0, type: "number", message: "Quantity must be more than or equal to 0" }]}
               >
-                <InputNumber min={0} controls={false} className={styles.input_number} readOnly={id !== null} />
+                <InputNumber controls={false} className={styles.input_number} readOnly={id !== null} />
               </Form.Item>
               <Form.Item
-                label="Price"
-                name="price"
+                label="Selling Price"
+                name="sell_price"
                 initialValue={0}
-                rules={[{ min: 0, type: 'number', message: "Price must be more than or equal to 0" }]}
+                rules={[{ min: 0, type: "number", message: "Price must be more than or equal to 0" }]}
               >
-                <InputNumber min={0} controls={false} className={styles.input_number} />
+                <InputNumber 
+                  min={0} 
+                  controls={false} 
+                  className={styles.input_number} 
+                  formatter={formatAmountCurrency} 
+                />
+              </Form.Item>
+              <Form.Item
+                label="Purchase Price"
+                name="buy_price"
+                initialValue={0}
+                rules={[{ min: 0, type: "number", message: "Price must be more than or equal to 0" }]}
+              >
+                <InputNumber 
+                  min={0} 
+                  controls={false} 
+                  className={styles.input_number}
+                  formatter={formatAmountCurrency} 
+                 />
               </Form.Item>
               <div className={styles.modal_action}>
                 <Button danger size="middle">Cancel</Button>

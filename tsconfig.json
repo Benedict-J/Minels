@@ -16,7 +16,7 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"],
-      "@/firebase": ["./firebase"],
+      "@/firebase": ["./firebase"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

@@ -1,9 +1,9 @@
 import "firebase/firestore";
 
 import { initializeApp } from "firebase/app";
-import { 
-  getFirestore, 
-  getDocs, 
+import {
+  getFirestore,
+  getDocs,
   collection,
   setDoc,
   doc,
@@ -20,7 +20,7 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
   writeBatch,
-  runTransaction
+  runTransaction,
 } from "firebase/firestore";
 
 import moment from "moment";
@@ -31,14 +31,14 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-}
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export const loadProducts = async (
-  search: string = "", 
+  search: string = "",
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
@@ -46,11 +46,12 @@ export const loadProducts = async (
 
   search = search.toLowerCase();
 
-  let q = query(productCol, 
-    where("name_lower", ">=", search), 
+  let q = query(
+    productCol,
+    where("name_lower", ">=", search),
     where("name_lower", "<=", search + "\uf8ff"),
     orderBy("name_lower"),
-    limit(size)
+    limit(size),
   );
 
   if (start) {
@@ -60,7 +61,7 @@ export const loadProducts = async (
   const querySnapshot = await getDocs(q);
   const countSnapshot = await getCountFromServer(productCol);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-    
+
   return {
     data: querySnapshot.docs.map((doc, index) => {
       const data = doc.data();
@@ -69,9 +70,9 @@ export const loadProducts = async (
       return data;
     }),
     next: lastVisible,
-    count: countSnapshot.data().count
-  }
-}
+    count: countSnapshot.data().count,
+  };
+};
 
 export const getProduct = async (id: string) => {
   const docRef = doc(db, "products", id);
@@ -80,12 +81,11 @@ export const getProduct = async (id: string) => {
   if (docSnap.exists()) {
     let product = docSnap.data();
     product.id = docSnap.id;
-    
+
     return product;
   } else {
-    
   }
-}
+};
 
 export const createProduct = async (values: any) => {
   if (values.id) {
@@ -95,17 +95,19 @@ export const createProduct = async (values: any) => {
       name: values.name,
       name_lower: values.name.toLowerCase(),
       quantity: values.quantity || 0,
-      price: values.price || 0
+      sell_price: values.sell_price || 0,
+      buy_price: values.buy_price || 0,
+      sold: 0,
     });
   }
-}
+};
 
 export const deleteProduct = async (id: string) => {
   await deleteDoc(doc(db, "products", id));
-}
+};
 
 export const loadOrders = async (
-  search: string = "", 
+  search: string = "",
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
@@ -113,11 +115,12 @@ export const loadOrders = async (
 
   search = search.toLowerCase();
 
-  let q = query(productCol, 
-    // where("id", ">=", search), 
+  let q = query(
+    productCol,
+    // where("id", ">=", search),
     // where("id", "<=", search + "\uf8ff"),
     // orderBy("id"),
-    limit(size)
+    limit(size),
   );
 
   if (start) {
@@ -127,7 +130,7 @@ export const loadOrders = async (
   const querySnapshot = await getDocs(q);
   const countSnapshot = await getCountFromServer(productCol);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-    
+
   return {
     data: querySnapshot.docs.map((doc, index) => {
       const data = doc.data();
@@ -136,15 +139,18 @@ export const loadOrders = async (
       return data;
     }),
     next: lastVisible,
-    count: countSnapshot.data().count
-  }
-}
+    count: countSnapshot.data().count,
+  };
+};
 
 export const createOrder = async (values: any) => {
   await addDoc(collection(db, "orders"), {
+    total: values.total,
+    status: values.status,
+    customer: values.customer,
     items: values.items,
-    created_at: moment().endOf('day').valueOf()
-  })
+    created_at: moment().valueOf(),
+  });
 
   values.items.map(async (item: any) => {
     await runTransaction(db, async (transaction) => {
@@ -155,9 +161,67 @@ export const createOrder = async (values: any) => {
       }
 
       const newQuantity = itemDoc.data().quantity - item.quantity;
+      const newSold = itemDoc.data().sold + item.quantity;
       transaction.update(ref, { quantity: newQuantity });
+    });
+  });
+
+  if (values.status === "UNPAID") {
+    await runTransaction(db, async (transaction) => {
+      const ref = doc(db, "customers", values.customer.id);
+      const customerDoc = await transaction.get(ref);
+
+      if (!customerDoc.exists()) {
+        throw "Document does not exists!";
+      }
+      
+      const newDebt = customerDoc.data().debt + values.total;
+      transaction.update(ref, { debt: newDebt }); 
     })
-  })
+  }
+};
+
+export const loadCustomers = async (
+  search: string = "",
+  size: number = 10,
+  start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
+) => {
+  const customersCollection = collection(db, "customers");
+
+  let q = query(
+    customersCollection,
+    where("name_lower", ">=", search),
+    where("name_lower", "<=", search + "\uf8ff"),
+    orderBy("name_lower"),
+    limit(size)
+  )
+
+  if (start) {
+    q = query(q, startAfter(start));
+  }
+
+  const querySnapshot = await getDocs(q);
+  const countSnapshot = await getCountFromServer(customersCollection);
+  const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+  return {
+    data: querySnapshot.docs.map((doc, index) => {
+      const data = doc.data();
+      data.id = doc.id;
+      data.key = index;
+      return data;
+    }),
+    next: lastVisible,
+    count: countSnapshot.data().count,
+  }
+}
+
+export const createCustomer = async (values: any) => {
+  await addDoc(collection(db, "customers"), {
+    name: values.name,
+    name_lower: values.name.toLowerCase(),
+    debt: values.debt
+  });
 }
 
 // Dashboard APIs
@@ -165,8 +229,167 @@ export const createOrder = async (values: any) => {
 export const generateTotalRevenue = async () => {
   const ordersCollection = collection(db, "orders");
 
-  // const currentDate = moment()
-  // const prevMonthDate = currentDate.subtract(1, 'months')
+  const currentDate = moment().endOf("D").valueOf();
+  const prevMonthDate = moment().subtract(1, "months");
 
-  // let q = query(orderCollection, where('created_at', '<=', currentDate.))
+  let q = query(
+    ordersCollection,
+    where("created_at", ">=", prevMonthDate.valueOf()),
+    where("created_at", "<=", currentDate.valueOf()),
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const total = querySnapshot.docs.reduce(
+    (acc, current) => acc + current.data().total,
+    0,
+  );
+
+  return total;
+};
+
+export const generateTotalSales = async () => {
+  const ordersCollection = collection(db, "orders");
+
+  const currentDate = moment().endOf("D").valueOf();
+  const prevMonthDate = moment().subtract(1, "months");
+
+  let q = query(
+    ordersCollection,
+    where("created_at", ">=", prevMonthDate.valueOf()),
+    where("created_at", "<=", currentDate.valueOf()),
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const total = querySnapshot.docs.reduce(
+    (acc, current) =>
+      acc +
+      current
+        .data()
+        .items.reduce(
+          (acc: any, item: { quantity: any }) => acc + item.quantity,
+          0,
+        ),
+    0,
+  );
+
+  return total;
+};
+
+export const getPopularItems = async () => {
+  const productsCollection = collection(db, "products");
+
+  const q = query(productsCollection, where("sold", ">", 0));
+
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc, index) => {
+    const data = doc.data();
+
+    return data;
+  });
+};
+
+export const generateTotalProfit = async () => {
+  const ordersCollection = collection(db, "orders");
+
+  const currentDate = moment().endOf("D").valueOf();
+  const prevMonthDate = moment().subtract(1, "months");
+
+  let q = query(
+    ordersCollection,
+    where("created_at", ">=", prevMonthDate.valueOf()),
+    where("created_at", "<=", currentDate.valueOf()),
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const profit = querySnapshot.docs.reduce(
+    (acc, current) =>{
+      const data = current.data();
+
+      return acc + data.items.reduce((acc: number, item: { sell_price: number; quantity: number; buy_price: number; }) => {
+        return acc + (item.sell_price) - (item.buy_price * item.quantity);
+      }, 0)
+    }, 0
+  )
+
+  return profit;
+}
+
+export const generateRevenueStatistics = async () => {
+  const ordersCollection = collection(db, "orders");
+
+  const currentDate = moment().endOf("D").valueOf();
+  const prevMonthDate = moment().subtract(1, "months");
+
+  let q = query(
+    ordersCollection,
+    where("created_at", ">=", prevMonthDate.valueOf()),
+    where("created_at", "<=", currentDate.valueOf()),
+  );
+
+  const querySnapshot = await getDocs(q);
+  let unpaidRevenue = 0;
+  let paidRevenue = 0;
+
+  let data: any = querySnapshot.docs.map((doc) => doc.data());
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].status === "UNPAID") {
+      unpaidRevenue += data[i].total;
+      console.log(data[i].total)
+    } else if (data[i].status === "PAID") {
+      paidRevenue += data[i].total;
+    }
+  }
+
+  return [unpaidRevenue, paidRevenue];
+}
+
+export const generateSalesAnalytics = async () => {
+  const ordersCollection = collection(db, "orders");
+
+  const currentDate = moment().endOf("D").valueOf();
+  const prevMonthDate = moment().subtract(1, "months");
+
+  let q = query(
+    ordersCollection,
+    where("created_at", ">=", prevMonthDate.valueOf()),
+    where("created_at", "<=", currentDate.valueOf()),
+    orderBy('created_at')
+  );
+
+  const querySnapshot = await getDocs(q);
+  const data: any = querySnapshot.docs.map(doc => doc.data());
+
+  let week1 = 0, week2 = 0, week3 = 0, week4 = 0;
+  
+  const endOfFirstWeek = moment().subtract(3, 'weeks')
+  const endOfSecondWeek = moment().subtract(2, 'weeks')
+  const endOfThirdWeek = moment().subtract(1, 'weeks')
+  const endOfFourthWeek = moment()
+
+  console.log(endOfFirstWeek, endOfSecondWeek, endOfThirdWeek, endOfFourthWeek)
+
+  for (let i = 0; i < data.length; i++) {
+    const dataMoment = moment(data[i].created_at);
+
+    if (endOfFirstWeek.diff(dataMoment) > 0) {
+      week1 += data[i].total;
+    } else if (endOfSecondWeek.diff(dataMoment) > 0) {
+      week2 += data[i].total;
+    } else if (endOfThirdWeek.diff(dataMoment) > 0) {
+      week3 += data[i].total;
+    } else if (endOfFourthWeek.diff(dataMoment) > 0) {
+      week4 += data[i].total;
+    }
+  }
+
+  return [week1, week2, week3, week4];
+}
+
+export const getHighestDebts = async () => {
+
 }
