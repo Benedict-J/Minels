@@ -1,0 +1,16 @@
+.unauthorized_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+
+  h1 {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    font-weight: 500;
+  }
+}

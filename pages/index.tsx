@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 
 import styles from "./index.module.scss";
 import { Button, Form, Input } from "antd";
+import RootLayout from "@/components/layout/RootLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,3 +44,7 @@ export default function Home() {
     </div>
   );
 }
+
+Home.getLayout = function getLayout(page: React.ReactNode) {
+  return <RootLayout>{page}</RootLayout>
+} 
