@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: any) => {
   const logout = () => {
     setCurrentUser(null)
     signOut(auth)
+    window.location.href = "/"
   };
   
   useEffect(() => {

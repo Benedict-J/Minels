@@ -30,7 +30,6 @@ export default function MainLayout({
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/')
     } catch (e) {
       console.log(e)
     }
