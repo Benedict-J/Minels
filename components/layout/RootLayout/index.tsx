@@ -1,9 +1,12 @@
 import { AuthContext } from "@/context/auth";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import styles from './index.module.scss';
+
+const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
 export default function RootLayout({
   children
@@ -13,17 +16,13 @@ export default function RootLayout({
   const router = useRouter();
   const { currentUser } = useContext(AuthContext);
 
-  const redirectToHome = () => router.replace('/')
+  useEffect(() => {
+    if (!currentUser) {
+      router.push('/unauthorized')
+    }
+  }, [router.push, currentUser])
 
-  if (!currentUser && router.pathname !== "/") {
-    return (
-      <div className={styles.unauthorized_container}>
-        <h1>No Authorization found</h1>
-        <h3>To access it please login first</h3>
-        <Button type="primary" onClick={redirectToHome}>Return home</Button>
-      </div>
-    )
-  }
-
-  return children;
+  return (
+    currentUser? children : null
+  );
 }

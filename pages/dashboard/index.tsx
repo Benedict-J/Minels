@@ -53,7 +53,7 @@ export default function Dashboard() {
     const totalProfit = await generateTotalProfit();
     const revenueStatistics = await generateRevenueStatistics();
     const salesAnalytics = await generateSalesAnalytics();
-    const highestDebts = await 
+    // const highestDebts = await 
 
     setData({
       totalRevenue: totalRevenue,

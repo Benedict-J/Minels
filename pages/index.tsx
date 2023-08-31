@@ -1,13 +1,23 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-
 import styles from "./index.module.scss";
 import { Button, Form, Input } from "antd";
-import RootLayout from "@/components/layout/RootLayout";
-
-const inter = Inter({ subsets: ["latin"] });
+import { useContext } from "react";
+import { AuthContext } from "@/context/auth";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
+  const { login } = useContext(AuthContext);
+
+  const handleFinish = async (values: any) => {
+    try {
+      const userCredential = await login(values)
+
+      router.push('/dashboard')
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <div className={styles.home_container}>
       <div className={styles.cover_background}>
@@ -29,14 +39,23 @@ export default function Home() {
         <div className={styles.form_title}>
           <h2>Login</h2>
         </div>
-        <Form layout="vertical" className={styles.form}>
-          <Form.Item label="Username" name="username">
+        <Form 
+          layout="vertical" 
+          className={styles.form}
+          onFinish={handleFinish}
+        >
+          <Form.Item label="Email" name="email">
             <Input />
           </Form.Item>
           <Form.Item label="Password" name="password">
             <Input />
           </Form.Item>
-          <Button className={styles.login_button} type="primary" block>
+          <Button 
+            className={styles.login_button} 
+            type="primary" 
+            block
+            htmlType="submit"
+          >
             Login
           </Button>
         </Form>
@@ -44,7 +63,3 @@ export default function Home() {
     </div>
   );
 }
-
-Home.getLayout = function getLayout(page: React.ReactNode) {
-  return <RootLayout>{page}</RootLayout>
-} 
