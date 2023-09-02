@@ -14,7 +14,7 @@ import {
 import { formatAmountCurrency } from "@/utils/format";
 import { Doughnut, Line, Pie } from "react-chartjs-2";
 import { ArcElement, CategoryScale, Chart, Legend, LineElement, LinearScale, PointElement, Tooltip } from "chart.js";
-import { htmlLegendPlugin } from "./config";
+import { htmlLegendPlugin } from "@/utils/chart";
 import RootLayout from "@/components/layout/RootLayout";
 
 Chart.register(
