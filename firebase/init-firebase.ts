@@ -269,6 +269,9 @@ export const createCustomer = async (values: any) => {
 // Dashboard APIs
 
 export const generateTotalRevenue = async () => {
+  const user = auth.currentUser;
+  if (!user) return 0;
+
   const ordersCollection = collection(db, "orders");
 
   const currentDate = moment().endOf("D").valueOf();
@@ -276,6 +279,7 @@ export const generateTotalRevenue = async () => {
 
   let q = query(
     ordersCollection,
+    where("author", "==", user.uid),
     where("created_at", ">=", prevMonthDate.valueOf()),
     where("created_at", "<=", currentDate.valueOf()),
   );
@@ -292,7 +296,7 @@ export const generateTotalRevenue = async () => {
 
 export const generateTotalSales = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return 0;
 
   const ordersCollection = collection(db, "orders");
 
@@ -301,6 +305,7 @@ export const generateTotalSales = async () => {
 
   let q = query(
     ordersCollection,
+    where("author", "==", user.uid),
     where("created_at", ">=", prevMonthDate.valueOf()),
     where("created_at", "<=", currentDate.valueOf()),
   );
@@ -324,7 +329,7 @@ export const generateTotalSales = async () => {
 
 export const getPopularItems = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return [];
 
   const productsCollection = collection(db, "products");
 
@@ -343,7 +348,7 @@ export const getPopularItems = async () => {
 
 export const generateTotalProfit = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return 0;
 
   const ordersCollection = collection(db, "orders");
 
@@ -374,7 +379,7 @@ export const generateTotalProfit = async () => {
 
 export const generateRevenueStatistics = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return [0, 0];
 
   const ordersCollection = collection(db, "orders");
 
@@ -408,7 +413,7 @@ export const generateRevenueStatistics = async () => {
 
 export const generateSalesAnalytics = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return [0, 0, 0, 0];
 
   const ordersCollection = collection(db, "orders");
 
