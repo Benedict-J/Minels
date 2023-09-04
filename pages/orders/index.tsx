@@ -112,11 +112,11 @@ export default function Orders() {
       <h2>Orders</h2>
       <Row className={styles.header}>
         <Col span={20}>
-          <Search
+          {/* <Search
             placeholder="Search Products"
             style={{ width: "200px" }}
             onSearch={handleSearch}
-          />
+          /> */}
         </Col>
         <Col span="auto" className={styles.button_container}>
           <InModal
