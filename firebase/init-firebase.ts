@@ -46,7 +46,11 @@ export const loadProducts = async (
   const user = auth.currentUser;
 
   if (!user) {
-    return;
+    return {
+      data: [],
+      next: null,
+      count: 0
+    };
   }
   
   const productCol = collection(db, "products");
@@ -137,7 +141,11 @@ export const loadOrders = async (
   const user = auth.currentUser;
 
   if (!user) {
-    return;
+    return {
+      data: [],
+      next: null,
+      count: 0
+    };
   }
 
   const productCol = collection(db, "orders");
@@ -220,7 +228,11 @@ export const loadCustomers = async (
   const user = auth.currentUser;
 
   if (!user) {
-    return;
+    return {
+      data: [],
+      next: null,
+      count: 0
+    };
   }
 
   const customersCollection = collection(db, "customers");
