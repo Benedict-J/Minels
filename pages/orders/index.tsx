@@ -7,7 +7,6 @@ import {
   InputNumber,
   Row,
   Select,
-  Spin,
   Typography,
   message,
 } from "antd";
@@ -15,16 +14,16 @@ import {
 import MainLayout from "@/components/layout/MainLayout";
 import InTable, { DataTableRef } from "@/components/InTable";
 import InModal from "@/components/InModal";
+import ItemOrders from "./components/ItemOrders";
+import SelectCustomer from "./components/SelectCustomer";
 
 import styles from "./index.module.scss";
 import {
   createOrder,
   loadOrders,
 } from "@/firebase/init-firebase";
-import ItemOrders from "./components/ItemOrders";
 
 import { formatAmountCurrency } from "@/utils/format";
-import SelectCustomer from "./components/SelectCustomer";
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -80,10 +79,12 @@ export default function Orders() {
     {
       title: "ID",
       dataIndex: "id",
+      width: 200
     },
     {
-      title: "items",
+      title: "Items",
       dataIndex: "items",
+      width: 200,
       render: (text: any) => {
         return (
           <Text ellipsis={true}>
@@ -95,6 +96,15 @@ export default function Orders() {
         );
       },
     },
+    {
+      title: "Action",
+      width: 100,
+      render: () => (
+        <>
+          <Button>Details</Button>
+        </>
+      )
+    }
   ];
 
   return (

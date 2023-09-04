@@ -13,13 +13,11 @@ import {
   getCountFromServer,
   where,
   query,
-  startAt,
   limit,
   orderBy,
   startAfter,
   QueryDocumentSnapshot,
   DocumentData,
-  writeBatch,
   runTransaction,
 } from "firebase/firestore";
 
@@ -36,20 +34,28 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 export const auth = getAuth(app);
+const db = getFirestore(app);
+
 
 export const loadProducts = async (
   search: string = "",
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return;
+  }
+  
   const productCol = collection(db, "products");
 
   search = search.toLowerCase();
 
   let q = query(
     productCol,
+    where("author", "==", user.uid),
     where("name_lower", ">=", search),
     where("name_lower", "<=", search + "\uf8ff"),
     orderBy("name_lower"),
@@ -61,8 +67,10 @@ export const loadProducts = async (
   }
 
   const querySnapshot = await getDocs(q);
-  const countSnapshot = await getCountFromServer(productCol);
+  const countSnapshot = await getCountFromServer(q);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+  console.log(querySnapshot)
 
   return {
     data: querySnapshot.docs.map((doc, index) => {
@@ -77,6 +85,12 @@ export const loadProducts = async (
 };
 
 export const getProduct = async (id: string) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return;
+  }
+
   const docRef = doc(db, "products", id);
   const docSnap = await getDoc(docRef);
 
@@ -90,6 +104,12 @@ export const getProduct = async (id: string) => {
 };
 
 export const createProduct = async (values: any) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return;
+  }
+
   if (values.id) {
     await setDoc(doc(db, "products", values.id), values);
   } else {
@@ -100,6 +120,7 @@ export const createProduct = async (values: any) => {
       sell_price: values.sell_price || 0,
       buy_price: values.buy_price || 0,
       sold: 0,
+      author: user.uid
     });
   }
 };
@@ -113,15 +134,19 @@ export const loadOrders = async (
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return;
+  }
+
   const productCol = collection(db, "orders");
 
   search = search.toLowerCase();
 
   let q = query(
     productCol,
-    // where("id", ">=", search),
-    // where("id", "<=", search + "\uf8ff"),
-    // orderBy("id"),
+    where('author', '==', user.uid),
     limit(size),
   );
 
@@ -146,11 +171,15 @@ export const loadOrders = async (
 };
 
 export const createOrder = async (values: any) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   await addDoc(collection(db, "orders"), {
     total: values.total,
     status: values.status,
     customer: values.customer,
     items: values.items,
+    author: user.uid,
     created_at: moment().valueOf(),
   });
 
@@ -188,10 +217,17 @@ export const loadCustomers = async (
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return;
+  }
+
   const customersCollection = collection(db, "customers");
 
   let q = query(
     customersCollection,
+    where("author", "==", user.uid),
     where("name_lower", ">=", search),
     where("name_lower", "<=", search + "\uf8ff"),
     orderBy("name_lower"),
@@ -219,10 +255,14 @@ export const loadCustomers = async (
 }
 
 export const createCustomer = async (values: any) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   await addDoc(collection(db, "customers"), {
     name: values.name,
     name_lower: values.name.toLowerCase(),
-    debt: values.debt
+    debt: values.debt,
+    author: user.uid
   });
 }
 
@@ -251,6 +291,9 @@ export const generateTotalRevenue = async () => {
 };
 
 export const generateTotalSales = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const ordersCollection = collection(db, "orders");
 
   const currentDate = moment().endOf("D").valueOf();
@@ -280,9 +323,14 @@ export const generateTotalSales = async () => {
 };
 
 export const getPopularItems = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const productsCollection = collection(db, "products");
 
-  const q = query(productsCollection, where("sold", ">", 0));
+  const q = query(productsCollection, 
+    where("author", "==", user.uid), 
+    where("sold", ">", 0));
 
   const querySnapshot = await getDocs(q);
 
@@ -294,6 +342,9 @@ export const getPopularItems = async () => {
 };
 
 export const generateTotalProfit = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const ordersCollection = collection(db, "orders");
 
   const currentDate = moment().endOf("D").valueOf();
@@ -301,6 +352,7 @@ export const generateTotalProfit = async () => {
 
   let q = query(
     ordersCollection,
+    where("author", "==", user.uid),
     where("created_at", ">=", prevMonthDate.valueOf()),
     where("created_at", "<=", currentDate.valueOf()),
   );
@@ -321,6 +373,9 @@ export const generateTotalProfit = async () => {
 }
 
 export const generateRevenueStatistics = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const ordersCollection = collection(db, "orders");
 
   const currentDate = moment().endOf("D").valueOf();
@@ -328,6 +383,7 @@ export const generateRevenueStatistics = async () => {
 
   let q = query(
     ordersCollection,
+    where("author", "==", user.uid),
     where("created_at", ">=", prevMonthDate.valueOf()),
     where("created_at", "<=", currentDate.valueOf()),
   );
@@ -351,6 +407,9 @@ export const generateRevenueStatistics = async () => {
 }
 
 export const generateSalesAnalytics = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const ordersCollection = collection(db, "orders");
 
   const currentDate = moment().endOf("D").valueOf();
@@ -358,6 +417,7 @@ export const generateSalesAnalytics = async () => {
 
   let q = query(
     ordersCollection,
+    where("author", "==", user.uid),
     where("created_at", ">=", prevMonthDate.valueOf()),
     where("created_at", "<=", currentDate.valueOf()),
     orderBy('created_at')

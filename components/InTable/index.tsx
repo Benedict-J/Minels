@@ -1,9 +1,10 @@
 import { Button, Table, Pagination } from "antd";
 import { AnyObject } from "antd/es/_util/type";
 import { ColumnsType } from "antd/es/table";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from "react";
 
 import styles from "./styles.module.scss";
+import { AuthContext } from "@/context/auth";
 
 interface InTableProps {
   api?: Function;
@@ -12,6 +13,8 @@ interface InTableProps {
 }
 
 export default forwardRef(function InTable(props: InTableProps, ref) {
+  const { currentUser } = useContext(AuthContext);
+
   const [loading, setLoading] = useState(false);
   const { api = null, columns = [], data = [] } = props;
   const [list, setList] = useState(data);
