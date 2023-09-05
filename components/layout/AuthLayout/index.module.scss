@@ -1,0 +1,41 @@
+.home_container {
+  display: flex;
+  overflow: hidden;
+}
+
+.cover_background {
+  width: 55vw;
+  height: 100vh;
+  background: #001529;
+  box-sizing: border-box !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: 150px;
+
+  h1 {
+    color: white;
+    font-size: 48px;
+    margin-bottom: 0;
+  }
+
+  p {
+    color: white;
+    font-size: 24px;
+  }
+
+  .features {
+    color: white;
+    font-size: 18px;
+    padding-inline-start: 20px;
+
+    li {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.auth_container {
+  height: 100vh;
+  overflow: hidden;
+}

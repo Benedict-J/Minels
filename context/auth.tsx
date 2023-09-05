@@ -1,4 +1,4 @@
-import { User, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { auth } from "@/firebase/init-firebase";
 import { Spin } from "antd";
@@ -8,14 +8,16 @@ interface IAuthContext {
   currentUser: User | null
   login: any,
   logout: any,
-  registerWithEmail: any
+  registerWithEmail: any,
+  forgotPassword: any,
 }
 
 export const AuthContext = createContext<IAuthContext>({
   currentUser: null,
   login: () => null,
   logout: () => null,
-  registerWithEmail: () => null
+  registerWithEmail: () => null,
+  forgotPassword: () => null
 });
 
 export const AuthProvider = ({ children }: any) => {
@@ -31,6 +33,8 @@ export const AuthProvider = ({ children }: any) => {
     signOut(auth)
     window.location.href = "/"
   };
+
+  const forgotPassword = (email: string) => sendPasswordResetEmail(auth, email)
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -42,7 +46,7 @@ export const AuthProvider = ({ children }: any) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail }}>
+    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail, forgotPassword }}>
       {loading? null : children}
     </AuthContext.Provider>
   )
