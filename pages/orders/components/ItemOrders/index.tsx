@@ -5,8 +5,11 @@ import { loadProducts } from "@/firebase/init-firebase";
 
 import styles from "./index.module.scss";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
+import { formatAmountCurrency } from "@/utils/format";
 
-export default function ItemOrders(props: any) {
+export default function ItemOrders({
+  disabled
+}: any) {
   const form = Form.useFormInstance();
 
   const [products, setProducts] = useState<any>([]);
@@ -135,7 +138,7 @@ export default function ItemOrders(props: any) {
                 <th>Name</th>
                 <th className={styles.quantity_column}>Qty</th>
                 <th className={styles.quantity_column}>Price</th>
-                <th className={styles.action_column}>Action</th>
+                {!disabled && <th className={styles.action_column}>Action</th>}
               </tr>
             </thead>
             <tbody id="item-orders-tbody">
@@ -144,33 +147,37 @@ export default function ItemOrders(props: any) {
                   <td className={styles.name_column}>
                     <Form.Item
                       {...restField}
-                      name={[name, "id"]}
+                      name={disabled? [name, "name"] : [name, "id"]}
                       initialValue=""
                     >
-                      <Select
-                        className={styles.name_field_column}
-                        onDropdownVisibleChange={handleOpenSelect}
-                        onPopupScroll={handleScroll}
-                        onChange={handleItemChange}
-                        options={products}
-                        dropdownRender={(originNode) => (
-                          <>
-                            <div>{originNode}</div>
-                            {loadBottom && (
-                              <div className={styles.spin_container}>
-                                <Spin
-                                  indicator={
-                                    <LoadingOutlined
-                                      style={{ fontSize: 16 }}
-                                      spin
-                                    />
-                                  }
-                                />
-                              </div>
-                            )}
-                          </>
-                        )}
-                      />
+                      {disabled? (
+                        <Input readOnly bordered={false} />
+                     ) : (
+                        <Select
+                          className={styles.name_field_column}
+                          onDropdownVisibleChange={handleOpenSelect}
+                          onPopupScroll={handleScroll}
+                          onChange={handleItemChange}
+                          options={products}
+                          dropdownRender={(originNode) => (
+                            <>
+                              <div>{originNode}</div>
+                              {loadBottom && (
+                                <div className={styles.spin_container}>
+                                  <Spin
+                                    indicator={
+                                      <LoadingOutlined
+                                        style={{ fontSize: 16 }}
+                                        spin
+                                      />
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </>
+                          )}
+                        />
+                      )}
                     </Form.Item>
                     <Form.Item {...restField} name={[name, "name"]} noStyle>
                       <Input style={{ display: "none" }} />
@@ -203,7 +210,7 @@ export default function ItemOrders(props: any) {
                       name={[name, "sell_price"]}
                       initialValue={0}
                     >
-                      <Input
+                      <InputNumber
                         bordered={false}
                         readOnly
                         min={0}
@@ -212,26 +219,30 @@ export default function ItemOrders(props: any) {
                             ? form.getFieldsValue(true).items[index].quantity
                             : 0
                         }
+                        formatter={formatAmountCurrency}
                       />
                     </Form.Item>
                   </td>
                   <td className={styles.action_column_item}>
-                    <Button type="text" danger onClick={() => remove(index)}>
-                      Remove
-                    </Button>
+                    {!disabled &&
+                      <Button type="text" danger onClick={() => remove(index)}>
+                        Remove
+                      </Button>}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <Button
-            onClick={() => handleAddItem(add)}
-            className={styles.add_button}
-            type="primary"
-            block
-          >
-            Add Item
-          </Button>
+          {!disabled && 
+            <Button
+              onClick={() => handleAddItem(add)}
+              className={styles.add_button}
+              type="primary"
+              block
+            >
+              Add Item
+            </Button>
+          }
           <Form.ErrorList className={styles.error_list} errors={errors} />
         </>
       )}

@@ -20,12 +20,13 @@ import SelectCustomer from "./components/SelectCustomer";
 import styles from "./index.module.scss";
 import {
   createOrder,
+  getOrder,
   loadOrders,
+  updateOrderStatus,
 } from "@/firebase/init-firebase";
 
 import { formatAmountCurrency } from "@/utils/format";
 
-const { Search } = Input;
 const { Text } = Typography;
 
 export default function Orders() {
@@ -38,17 +39,22 @@ export default function Orders() {
 
   const handleFinish = (values: any) => {
     setLoadingForm(true);
-    createOrder(values);
 
-    if (id) {
-      messageApi.success("Order has been successfully updated");
-    } else {
-      messageApi.success("Order has been successfully created");
+    try {
+      if (id) {
+        updateOrderStatus(id, values.status)
+        messageApi.success("Order has been successfully updated");
+      } else {
+        createOrder(values);
+        messageApi.success("Order has been successfully created");
+      }
+      
+      setLoadingForm(false);
+      handleClose();
+      tableRef.current?.reload();
+    } catch (e) {
+      console.log(e)
     }
-
-    setLoadingForm(false);
-    handleClose();
-    tableRef.current?.reload();
   };
 
   const handleFinishFailed = ({ errorFields }: { errorFields: any }) => {
@@ -58,6 +64,26 @@ export default function Orders() {
   const handleOpen = (e?: any, id?: string): void => {
     if (id) {
       setLoadingForm(true);
+      setId(id);
+
+      getOrder(id)
+        .then(res => {
+          res = {
+            ...res,
+            items: res?.items.map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              sell_price: item.sell_price,
+              buy_price: item.buy_price
+            }))
+          }
+
+          console.log(res)
+
+          form.setFieldsValue(res);
+        })
+        .finally(() => setLoadingForm(false));
     }
 
     setOpen(true);
@@ -69,10 +95,6 @@ export default function Orders() {
 
     setId(null);
     setOpen(false);
-  };
-
-  const handleSearch = (value: string) => {
-    tableRef.current?.setFilter((prev: any) => ({ ...prev, search: value }));
   };
 
   const columns = [
@@ -99,9 +121,9 @@ export default function Orders() {
     {
       title: "Action",
       width: 100,
-      render: () => (
+      render: (text: any) => (
         <>
-          <Button>Details</Button>
+          <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Details</Button>
         </>
       )
     }
@@ -112,11 +134,6 @@ export default function Orders() {
       <h2>Orders</h2>
       <Row className={styles.header}>
         <Col span={20}>
-          {/* <Search
-            placeholder="Search Products"
-            style={{ width: "200px" }}
-            onSearch={handleSearch}
-          /> */}
         </Col>
         <Col span="auto" className={styles.button_container}>
           <InModal
@@ -140,14 +157,15 @@ export default function Orders() {
               </Form.Item>
               <Form.Item label="Status" name="status">
                 <Select 
+                  disabled={id !== null && form.getFieldValue('status') === 'PAID'}
                   options={[ 
                     { value: "UNPAID", label: "Unpaid" },
                     { value: "PAID", label: "Paid" }
                   ]} 
                 />
               </Form.Item>
-              <SelectCustomer />
-              <ItemOrders />
+              <SelectCustomer disabled={id !== null} />
+              <ItemOrders disabled={id !== null} />
               <div className={styles.order_summary}>
                 <Form.Item label="Total Price" name="total">
                   <InputNumber

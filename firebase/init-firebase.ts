@@ -19,6 +19,7 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
   runTransaction,
+  updateDoc,
 } from "firebase/firestore";
 
 import moment from "moment";
@@ -178,6 +179,22 @@ export const loadOrders = async (
   };
 };
 
+export const getOrder = async (id: string) => {
+  const user = auth.currentUser;
+  if (!user) return {};
+  
+  const docRef = doc(db, "orders", id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    let order = docSnap.data();
+    order.id = docSnap.id;
+
+    return order;
+  } else {
+  }
+}
+
 export const createOrder = async (values: any) => {
   const user = auth.currentUser;
   if (!user) return;
@@ -219,6 +236,15 @@ export const createOrder = async (values: any) => {
     })
   }
 };
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  await updateDoc(doc(db, "orders", id), {
+    status: status
+  })
+}
 
 export const loadCustomers = async (
   search: string = "",

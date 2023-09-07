@@ -8,6 +8,7 @@ export default function AuthLayout({
       {/* {contextHolder} */}
       <div className={styles.cover_background}>
         <h1>Minels</h1>
+        <p>The minimal solution to your sales management system</p> 
         <ul className={styles.features}>
           <li>
             Dashboard for reviewing your business health
@@ -19,6 +20,9 @@ export default function AuthLayout({
             Track inventory change from purchases
           </li>
         </ul>
+        <footer className={styles.footer}>
+          Copyright © Benedict Jefferson 2023
+        </footer>
       </div>
       <div className={styles.auth_container}>
         {children}

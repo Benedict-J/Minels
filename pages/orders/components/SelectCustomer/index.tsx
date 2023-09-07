@@ -6,7 +6,9 @@ import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { useState } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 
-export default function SelectCustomer() {
+export default function SelectCustomer({
+  disabled
+}: any) {
   const form = Form.useFormInstance();
 
   const [customers, setCustomers] = useState<any>([]);
@@ -99,6 +101,7 @@ export default function SelectCustomer() {
           showSearch
           filterOption={false}
           notFoundContent={null}
+          disabled={disabled}
           dropdownRender={(originNode) => (
             <>
               <div>{originNode}</div>

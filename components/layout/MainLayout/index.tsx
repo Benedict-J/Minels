@@ -6,6 +6,7 @@ import items from "./config/items";
 import styles from "./index.module.scss";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/context/auth";
+import { UserOutlined } from "@ant-design/icons";
 
 const { Header, Content, Sider } = Layout;
 
@@ -51,6 +52,7 @@ export default function MainLayout({
       <Header
         style={{
           display: "flex",
+          justifyContent: 'end',
           alignItems: "center",
           position: "sticky",
           top: 0,
@@ -58,7 +60,9 @@ export default function MainLayout({
         }}
       >
         <Dropdown menu={{ items: navbarItems }}>
-          <Button>Click Here</Button>
+          <Button shape="circle">
+            <UserOutlined />
+          </Button>
         </Dropdown>
       </Header>
       <Layout>
@@ -72,6 +76,9 @@ export default function MainLayout({
         </Sider>
         <Layout>
           <Content className={styles.main}>{children}</Content>
+          <footer className={styles.footer}>
+            Copyright © Benedict Jefferson 2023
+          </footer>
         </Layout>
       </Layout>
     </Layout>
