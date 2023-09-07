@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<!-- This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
@@ -35,4 +35,38 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details. -->
+
+# Minels
+
+The simple solution to your sales management system. 
+
+## Table of Contents
+
+- Overview
+- Technologies
+- Getting Started
+
+### Overview
+
+Do you have a small business where customers frequently pay-later? This sales management system can tracks customer's unsettled payments, help you track inventory and generate analytical data using our dashboard.
+
+This project revolves around trust between customers and business owners and micro businesses can keep track of their revenues instead of using traditional tracking methods such as Excel spreadsheets.
+
+### Technologies
+
+- NextJS
+- Ant Design
+- Firebase (Authentication and Firestore)
+- ChartJS
+- Moment
+- Sass
+
+### Getting Started
+
+```bash
+$ git clone https://github.com/Benedict-J/Minels.git
+$ cd Minels
+$ npm install
+$ npm dev
+```

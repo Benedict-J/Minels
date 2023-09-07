@@ -131,7 +131,6 @@ export const createProduct = async (values: any) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  console.log(id)
   await deleteDoc(doc(db, "products", id));
 };
 
