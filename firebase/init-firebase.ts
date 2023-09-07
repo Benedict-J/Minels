@@ -36,7 +36,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 
 export const loadProducts = async (
@@ -131,6 +131,7 @@ export const createProduct = async (values: any) => {
 };
 
 export const deleteProduct = async (id: string) => {
+  console.log(id)
   await deleteDoc(doc(db, "products", id));
 };
 
@@ -236,6 +237,10 @@ export const createOrder = async (values: any) => {
     })
   }
 };
+
+export const deleteCustomer = async (id: string) => {
+  await deleteDoc(doc(db, "customers", id))
+}
 
 export const updateOrderStatus = async (id: string, status: string) => {
   const user = auth.currentUser;

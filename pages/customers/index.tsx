@@ -4,7 +4,7 @@ import { Col, Row, Input, Form, message, InputNumber, Button } from "antd";
 import InModal from "@/components/InModal";
 import { useRef, useState } from "react";
 import InTable, { DataTableRef } from "@/components/InTable";
-import { createCustomer, loadCustomers } from "@/firebase/init-firebase";
+import { createCustomer, deleteCustomer, deleteOrder, loadCustomers } from "@/firebase/init-firebase";
 import { formatAmountCurrency } from "@/utils/format";
 
 const { Search } = Input;
@@ -40,6 +40,12 @@ export default function Customers() {
     setOpen(true);
   };
 
+  const handleDelete = (e: any, id: string) => {
+    deleteCustomer(id);
+    tableRef.current?.reload();
+    messageApi.success("Order has been successfully deleted");
+  }
+
   const handleClose = () => {
     form.resetFields();
     form.setFieldValue("items", undefined);
@@ -64,6 +70,13 @@ export default function Customers() {
       render: (text: string) => (
         <div>{formatAmountCurrency(text)}</div>
       )
+    },
+    {
+      title: "Action",
+      width: 100,
+      render: (text: any) => {
+        return <Button danger onClick={(e) => handleDelete(e, text.id)}>Delete</Button>
+      }
     }
   ]
 
