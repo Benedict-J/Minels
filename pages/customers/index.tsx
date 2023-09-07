@@ -4,7 +4,7 @@ import { Col, Row, Input, Form, message, InputNumber, Button } from "antd";
 import InModal from "@/components/InModal";
 import { useRef, useState } from "react";
 import InTable, { DataTableRef } from "@/components/InTable";
-import { createCustomer, deleteCustomer, deleteOrder, loadCustomers } from "@/firebase/init-firebase";
+import { createCustomer, deleteCustomer, loadCustomers } from "@/firebase/init-firebase";
 import { formatAmountCurrency } from "@/utils/format";
 
 const { Search } = Input;

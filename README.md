@@ -41,17 +41,22 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 The simple solution to your sales management system. 
 
+![Alt Text](./public/images/dashboard_image.png)
+
 ## Table of Contents
 
-- Overview
-- Technologies
-- Getting Started
+- [Overview](#overview)
+- [Technologies](#technologies)
+- [Getting Started](#getting-started)
 
 ### Overview
 
 Do you have a small business where customers frequently pay-later? This sales management system can tracks customer's unsettled payments, help you track inventory and generate analytical data using our dashboard.
 
 This project revolves around trust between customers and business owners and micro businesses can keep track of their revenues instead of using traditional tracking methods such as Excel spreadsheets.
+
+Access here:
+> https://minels.vercel.app/
 
 ### Technologies
 
