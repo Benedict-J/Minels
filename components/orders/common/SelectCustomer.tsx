@@ -7,7 +7,11 @@ import { useState } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 
 export default function SelectCustomer({
-  disabled
+  disabled,
+  label = "Name",
+  noStyle = false,
+  className = '',
+  placeholder = ''
 }: any) {
   const form = Form.useFormInstance();
 
@@ -18,7 +22,6 @@ export default function SelectCustomer({
     DocumentData
   > | null>();
   const [loadBottom, setLoadBottom] = useState(false);
-  const [search, setSearch] = useState("");
 
   const handleOpenSelect = () => handleLoadCustomers([], null);
 
@@ -27,7 +30,7 @@ export default function SelectCustomer({
     next: any = null,
     search: string = ""
   ) => {
-    const result = await loadCustomers(search, 10, next)
+    const result = await loadCustomers({ search: search }, 10, next)
     
     setNextPage(result.next);
     setTotalCustomers(result.count);
@@ -77,9 +80,10 @@ export default function SelectCustomer({
   return (
     <>
       <Form.Item 
-        label="Name" 
+        label={label} 
         name={["customer", "id"]} 
         dependencies={['status']}
+        noStyle={noStyle}
         rules={[
           ({ getFieldValue }) => ({
             validator(_, value) {
@@ -92,7 +96,7 @@ export default function SelectCustomer({
         ]}
       >
         <Select
-          className={styles.name_field_column}
+          className={styles.name_field_column + " " + className}
           onDropdownVisibleChange={handleOpenSelect}
           onPopupScroll={handleScroll}
           onChange={handleCustomerChange}
@@ -102,6 +106,7 @@ export default function SelectCustomer({
           filterOption={false}
           notFoundContent={null}
           disabled={disabled}
+          placeholder={placeholder}
           dropdownRender={(originNode) => (
             <>
               <div>{originNode}</div>

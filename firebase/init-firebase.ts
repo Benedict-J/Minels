@@ -40,7 +40,7 @@ export const db = getFirestore(app);
 
 
 export const loadProducts = async (
-  search: string = "",
+  filter: any = {},
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
@@ -55,8 +55,12 @@ export const loadProducts = async (
   }
   
   const productCol = collection(db, "products");
+  let search = "";
 
-  search = search.toLowerCase();
+  if (Object.keys(filter).includes('search')) {
+    search = filter.search;
+    search = search.toLowerCase();
+  }
 
   let q = query(
     productCol,
@@ -135,7 +139,7 @@ export const deleteProduct = async (id: string) => {
 };
 
 export const loadOrders = async (
-  search: string = "",
+  filter: any = {},
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
@@ -149,22 +153,25 @@ export const loadOrders = async (
     };
   }
 
-  const productCol = collection(db, "orders");
-
-  search = search.toLowerCase();
+  const ordersCollection = collection(db, "orders");
 
   let q = query(
-    productCol,
+    ordersCollection,
+    where("status", "in", ["UNPAID", "PAID"].filter(el => el !== filter.status)),
     where('author', '==', user.uid),
     limit(size),
   );
+
+  if (filter.customer) {
+    q = query(q, where('customer.id', '==', filter.customer || ''))
+  }
 
   if (start) {
     q = query(q, startAfter(start));
   }
 
   const querySnapshot = await getDocs(q);
-  const countSnapshot = await getCountFromServer(productCol);
+  const countSnapshot = await getCountFromServer(ordersCollection);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
   return {
@@ -251,7 +258,7 @@ export const updateOrderStatus = async (id: string, status: string) => {
 }
 
 export const loadCustomers = async (
-  search: string = "",
+  filter: any = {},
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
@@ -266,6 +273,11 @@ export const loadCustomers = async (
   }
 
   const customersCollection = collection(db, "customers");
+  let search = "";
+  if (Object.keys(filter).includes('search')) {
+    search = filter.search;
+    search = search.toLowerCase();
+  }
 
   let q = query(
     customersCollection,
@@ -500,5 +512,26 @@ export const generateSalesAnalytics = async () => {
 }
 
 export const getHighestDebts = async () => {
+  const user = auth.currentUser;
+  if (!user) return [];
 
+  const customersCollection = collection(db, "customers");
+
+  let q = query(
+    customersCollection,
+    limit(5),
+    orderBy('debt', 'desc')
+  );
+
+  const querySnapshot = await getDocs(q);
+  const data: any = querySnapshot.docs.map(doc => {
+    const data = doc.data();
+
+    return {
+      name: data.name,
+      debt: data.debt
+    }
+  });
+
+  return data;
 }

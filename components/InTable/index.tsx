@@ -29,7 +29,7 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
   const reload = async (isNext?: boolean) => {
     setLoading(true);
     if (api) {
-      const res = await api(filter.search, size, isNext ? nextPage : null);
+      const res = await api(filter, size, isNext ? nextPage : null);
       setList(res.data);
       setNextPage(res.next);
       setCount(res.count);

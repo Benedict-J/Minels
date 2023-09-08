@@ -9,6 +9,7 @@ import {
   generateTotalProfit,
   generateTotalRevenue,
   generateTotalSales,
+  getHighestDebts,
   getPopularItems,
 } from "@/firebase/init-firebase";
 import { formatAmountCurrency } from "@/utils/format";
@@ -34,6 +35,7 @@ interface DashboardData {
   totalProfit: number;
   revenueStatistics: number[];
   salesStatistics: number[];
+  highestDebts: any[];
 }
 
 export default function Dashboard() {
@@ -43,7 +45,8 @@ export default function Dashboard() {
     popularItems: [],
     totalProfit: 0,
     revenueStatistics: [0, 0],
-    salesStatistics: [0, 0, 0, 0]
+    salesStatistics: [0, 0, 0, 0],
+    highestDebts: []
   });
 
   const fetch = async () => {
@@ -53,7 +56,9 @@ export default function Dashboard() {
     const totalProfit = await generateTotalProfit();
     const revenueStatistics = await generateRevenueStatistics();
     const salesAnalytics = await generateSalesAnalytics();
-    // const highestDebts = await 
+    const highestDebts = await getHighestDebts();
+
+    console.log(highestDebts)
 
     setData({
       totalRevenue: totalRevenue,
@@ -61,7 +66,8 @@ export default function Dashboard() {
       popularItems: popularItems,
       totalProfit: totalProfit,
       revenueStatistics: revenueStatistics,
-      salesStatistics: salesAnalytics
+      salesStatistics: salesAnalytics,
+      highestDebts: highestDebts
     });
   };
 
@@ -190,7 +196,7 @@ export default function Dashboard() {
         <List
           size="small"
           header={<div>Highest Debts</div>}
-          dataSource={[{ name: 'Yoga', debt: 33000 }]}
+          dataSource={data.highestDebts}
           renderItem={(item) => (
             <List.Item>
               <div>{item.name}</div>

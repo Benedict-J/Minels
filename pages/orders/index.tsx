@@ -15,7 +15,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import InTable, { DataTableRef } from "@/components/InTable";
 import InModal from "@/components/InModal";
 import ItemOrders from "./components/ItemOrders";
-import SelectCustomer from "./components/SelectCustomer";
+import SelectCustomer from "@/components/orders/common/SelectCustomer";
 
 import styles from "./index.module.scss";
 import {
@@ -36,6 +36,14 @@ export default function Orders() {
   const [loadingForm, setLoadingForm] = useState(false);
   const [messageApi, contextHandler] = message.useMessage();
   const [open, setOpen] = useState(false);
+
+  const filterOrders = (changedValues: any, allValues: any) => {
+    if (changedValues.customer) {
+      tableRef.current?.setFilter((prev: any) => ({ ...prev, customer: changedValues.customer.id }));
+    } else if (changedValues.status) {
+      tableRef.current?.setFilter((prev: any) => ({ ...prev, status: changedValues.status }));
+    }
+  }
 
   const handleFinish = (values: any) => {
     setLoadingForm(true);
@@ -119,6 +127,16 @@ export default function Orders() {
       },
     },
     {
+      title: "Customer",
+      dataIndex: ['customer', 'name'],
+      width: 150
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      width: 100
+    },
+    {
       title: "Action",
       width: 100,
       render: (text: any) => (
@@ -134,6 +152,28 @@ export default function Orders() {
       <h2>Orders</h2>
       <Row className={styles.header}>
         <Col span={20}>
+          <Form
+            onValuesChange={filterOrders}
+            style={{ display: 'flex', gap: 10 }}
+          >
+            <SelectCustomer 
+              label={null} 
+              noStyle={true}
+              className={styles.select}
+              placeholder="Filter customer"
+            />
+            <Form.Item name="status" noStyle>
+              <Select 
+                className={styles.filter_status} 
+                placeholder="Filter status"
+                options={[ 
+                  { value: "All", label: "All" },
+                  { value: "UNPAID", label: "Unpaid" },
+                  { value: "PAID", label: "Paid" }
+                ]} 
+              />
+            </Form.Item>
+          </Form>
         </Col>
         <Col span="auto" className={styles.button_container}>
           <InModal
