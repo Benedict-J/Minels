@@ -40,9 +40,9 @@ export default function MainLayout({
     {
       key: '1',
       label: (
-        <Button onClick={handleLogout}>
+        <div onClick={handleLogout}>
           Logout
-        </Button>
+        </div>
       )
     }
   ]

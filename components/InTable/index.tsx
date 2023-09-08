@@ -8,7 +8,7 @@ import { AuthContext } from "@/context/auth";
 
 interface InTableProps {
   api?: Function;
-  columns?: ColumnsType<AnyObject>;
+  columns?: any;
   data?: [];
 }
 

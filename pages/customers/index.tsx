@@ -58,7 +58,7 @@ export default function Customers() {
     {
       title: "ID",
       dataIndex: "id",
-      responsive: ['md']
+      responsive: ['md'],
     },
     {
       title: "Name",
