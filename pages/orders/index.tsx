@@ -115,6 +115,7 @@ export default function Orders() {
       title: "Items",
       dataIndex: "items",
       width: 200,
+      responsive: ['lg'],
       render: (text: any) => {
         return (
           <Text ellipsis={true}>
@@ -129,12 +130,14 @@ export default function Orders() {
     {
       title: "Customer",
       dataIndex: ['customer', 'name'],
-      width: 150
+      width: 150,
+      responsive: ['lg']
     },
     {
       title: "Status",
       dataIndex: "status",
-      width: 100
+      width: 100,
+      responsive: ['lg']
     },
     {
       title: "Action",

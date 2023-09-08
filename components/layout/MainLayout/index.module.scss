@@ -1,5 +1,4 @@
 .sider {
-  min-width: 300px !important;
   height: calc(100vh - 64px);
   background-color: white !important;
   // position: sticky;
@@ -17,10 +16,6 @@
 }
 
 @media (max-width: 992px) {
-  .sider {
-    min-width: none;
-  }
-
   .main {
     padding: 0;
   }

@@ -6,7 +6,7 @@
 
   .summary_row {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr;
     column-gap: 20px;
     margin-bottom: 16px;
   }
@@ -46,6 +46,8 @@
 .revenue_chart {
   width: 200px !important;
   height: 200px !important;
+  max-width: 200px !important;
+  max-height: 200px !important;
 }
 
 .sales_chart {
@@ -57,4 +59,28 @@
   display: grid;
   grid-template-columns: auto auto;
   gap: 30px;
+}
+
+@media(max-width: 992px) {
+  .container {
+    .summary_row {
+      overflow-x: scroll;
+      grid-template-columns: 80% 80% 80%;
+    }
+
+    .charts_row {
+      grid-template-columns: auto;
+      row-gap: 10px;
+    }
+  }
+
+  .revenue_chart {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .sales_chart {
+    width: 300px !important;
+    height: 150px !important;
+  }
 }

@@ -70,18 +70,20 @@ export default function Products() {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 200
+      width: 200,
+      responsive: ['md']
     },
     {
       title: "Name",
       dataIndex: "name",
-      key: "name"
+      key: "name",
     },
     {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      width: 100
+      width: 100,
+      responsive: ['md']
     },
     {
       title: "Action",
@@ -91,7 +93,8 @@ export default function Products() {
           <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Update</Button>
           <Button danger onClick={(e) => handleDelete(e, text.id)}>Delete</Button>
         </>
-      )
+      ),
+      responsize: ['md']
     }
   ]
 
@@ -100,10 +103,10 @@ export default function Products() {
       {contextHandler}
       <h2>Products</h2>
       <Row className={styles.header}>
-        <Col span={19}>
+        <Col xs={24} md={19}>
           <Search placeholder="Search Products" style={{ width: "200px" }} onSearch={handleSearch} />
         </Col>
-        <Col span="5" className={styles.button_container}>
+        <Col md={5} className={styles.button_container}>
           <InModal 
             title="Add Product" 
             open={open} 

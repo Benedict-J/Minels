@@ -54,3 +54,16 @@
 .filter_status {
   width: 150px;
 }
+
+@media (max-width: 992px) {
+  .container {
+    border-radius: 0px;
+    height: 100%;
+
+    .header {
+      .button_container {
+        justify-content: left;
+      }
+    }
+  }
+}

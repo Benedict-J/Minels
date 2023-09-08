@@ -57,7 +57,8 @@ export default function Customers() {
   const columns = [
     {
       title: "ID",
-      dataIndex: "id"
+      dataIndex: "id",
+      responsive: ['md']
     },
     {
       title: "Name",

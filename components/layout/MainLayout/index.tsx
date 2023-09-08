@@ -66,7 +66,12 @@ export default function MainLayout({
         </Dropdown>
       </Header>
       <Layout>
-        <Sider className={styles.sider} breakpoint="lg" collapsedWidth="0">
+        <Sider 
+          className={styles.sider} 
+          breakpoint="lg" 
+          collapsedWidth="0"
+          width={300}
+        >
           <Menu
             mode="inline"
             onClick={handleMenuItemClick}
