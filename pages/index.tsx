@@ -1,8 +1,6 @@
-import LoginForm from "@/components/LoginForm";
 import styles from "./index.module.scss";
 import { useState } from "react";
 import { message } from "antd";
-import RegistrationForm from "@/components/RegistrationForm";
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,10 +25,7 @@ export default function Home() {
         </ul>
       </div>
       <div className={styles.auth_container}>
-        {isLogin? 
-          <LoginForm setIsLogin={setIsLogin} message={messageApi} /> : 
-          <RegistrationForm setIsLogin={setIsLogin} message={messageApi} />
-        }
+        
       </div>
     </div>
   );

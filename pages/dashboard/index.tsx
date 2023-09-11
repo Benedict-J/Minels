@@ -17,6 +17,7 @@ import { Doughnut, Line, Pie } from "react-chartjs-2";
 import { ArcElement, CategoryScale, Chart, Legend, LineElement, LinearScale, PointElement, Tooltip } from "chart.js";
 import { htmlLegendPlugin } from "@/utils/chart";
 import RootLayout from "@/components/layout/RootLayout";
+import { endOfFirstWeek, endOfFourthWeek, endOfSecondWeek, endOfThirdWeek } from "@/utils/date";
 
 Chart.register(
   ArcElement, 
@@ -49,6 +50,66 @@ export default function Dashboard() {
     highestDebts: []
   });
 
+  const revenueChartData = {
+    labels: [
+      'Unpaid',
+      'Paid'
+    ],
+    datasets: [
+      {
+        data: data.revenueStatistics,
+        backgroundColor: [
+          '#001529',
+          '#f0f0f0'
+        ],
+        weight: 1
+      }
+    ]
+  }
+  
+  const revenueChartPlugin = {
+    plugins: {
+      htmlLegend: {
+        containerID: 'legend-container'
+      },
+      legend: {
+        display: false,
+      }, 
+    },
+  }
+
+  const salesChartData = {
+    labels: [endOfFirstWeek, endOfSecondWeek, endOfThirdWeek, endOfFourthWeek],
+    datasets: [
+      {
+        data: data.salesStatistics,
+        borderColor: '#001529',
+      }
+    ]
+  }
+
+  const salesChartOption = {
+    responsive: true,      
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 20000
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  }
+
   const fetch = async () => {
     const totalRevenue = await generateTotalRevenue();
     const totalSales = await generateTotalSales();
@@ -57,8 +118,6 @@ export default function Dashboard() {
     const revenueStatistics = await generateRevenueStatistics();
     const salesAnalytics = await generateSalesAnalytics();
     const highestDebts = await getHighestDebts();
-
-    console.log(highestDebts)
 
     setData({
       totalRevenue: totalRevenue,
@@ -110,32 +169,8 @@ export default function Dashboard() {
           <div className={styles.row_center}>
             <Doughnut 
               className={styles.revenue_chart}
-              data={{
-                labels: [
-                  'Unpaid',
-                  'Paid'
-                ],
-                datasets: [
-                  {
-                    data: data.revenueStatistics,
-                    backgroundColor: [
-                      '#001529',
-                      '#f0f0f0'
-                    ],
-                    weight: 1
-                  }
-                ]
-              }}
-              options={{
-                plugins: {
-                  htmlLegend: {
-                    containerID: 'legend-container'
-                  },
-                  legend: {
-                    display: false,
-                  }, 
-                },
-              }}
+              data={revenueChartData}
+              options={revenueChartPlugin}
               plugins={[htmlLegendPlugin]}
             />
             <div id="legend-container"></div>
@@ -148,36 +183,8 @@ export default function Dashboard() {
           <div className={styles.card_title}>Sales Analytics</div>
           <Line 
             className={styles.sales_chart}
-            data={{
-              labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-              datasets: [
-                {
-                  data: data.salesStatistics,
-                  borderColor: '#001529',
-                }
-              ]
-            }}
-            options={{
-              responsive: true,      
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    stepSize: 20000
-                  }
-                },
-                x: {
-                  grid: {
-                    display: false
-                  }
-                }
-              },
-              plugins: {
-                legend: {
-                  display: false
-                }
-              }
-            }}
+            data={salesChartData}
+            options={salesChartOption}
           />
         </Card>
       </div>
