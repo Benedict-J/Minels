@@ -1,5 +1,6 @@
 import { Button, Dropdown, Layout, Menu} from "antd";
 import type { MenuProps } from 'antd';
+import Image from "next/image";
 import { useRouter } from "next/router";
 import items from "./config/items";
 
@@ -52,13 +53,19 @@ export default function MainLayout({
       <Header
         style={{
           display: "flex",
-          justifyContent: 'end',
+          justifyContent: 'space-between',
           alignItems: "center",
           position: "sticky",
           top: 0,
           zIndex: 1,
         }}
       >
+        <Image 
+          src="/Minels-icon-white.png" 
+          alt="Logo" 
+          width={30} 
+          height={30} 
+        />
         <Dropdown menu={{ items: navbarItems }}>
           <Button shape="circle">
             <UserOutlined />

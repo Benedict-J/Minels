@@ -26,7 +26,7 @@ export default function AuthLayout({
       </div>
       <div className={styles.auth_container}>
         <Image 
-          src="/android-chrome-512x512.png" 
+          src="/Minels-icon.png" 
           alt="Logo" 
           width={50}
           height={50} 
