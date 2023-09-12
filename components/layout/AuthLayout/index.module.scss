@@ -38,8 +38,38 @@
 .auth_container {
   height: 100vh;
   overflow: hidden;
+
+  h1 {
+    display: none;
+  }
 }
 
 .footer {
   color: white;
 }
+
+@media (max-width: 992px) {
+  .cover_background {
+    padding-inline: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cover_background {
+    display: none;
+  }
+
+  .auth_container {
+    img {
+      display: block;
+      padding-top: 50px;
+      padding-inline: 50px;
+    }
+  }
+}
+
+// @media (max-width: 576px) {
+//   .cover_background {
+//     display: none;
+//   }
+// }

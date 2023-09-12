@@ -20,6 +20,7 @@
 
   .form {
     width: 100%;
+    margin-bottom: 10px;
   }
 
   .button {
@@ -35,5 +36,26 @@
 
   100% {
     opacity: 1;
+  }
+}
+
+@media (max-width: 992px) {
+  .form_container {
+    padding-inline: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .form_container {
+    width: 100vw;
+    padding-inline: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .form_container {
+    width: 100vw;
+    padding-inline: 50px;
+    padding-block: 50px;
   }
 }

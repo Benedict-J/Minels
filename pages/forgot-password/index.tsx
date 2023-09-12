@@ -4,6 +4,7 @@ import { Button, Form, Input } from "antd"
 import { useContext } from "react"
 import { AuthContext } from "@/context/auth"
 import { useRouter } from "next/router"
+import Link from "next/link"
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -31,6 +32,9 @@ export default function ForgotPassword() {
           Reset password
         </Button>
       </Form>
+      <Link href="/login" style={{ textDecoration: 'none' }}>
+        Back to login
+      </Link>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./index.module.scss";
 
 export default function AuthLayout({
@@ -5,7 +6,6 @@ export default function AuthLayout({
 }: { children: React.ReactNode }) {
   return (
     <div className={styles.home_container}>
-      {/* {contextHolder} */}
       <div className={styles.cover_background}>
         <h1>Minels</h1>
         <p>The minimal solution to your sales management system</p> 
@@ -25,6 +25,12 @@ export default function AuthLayout({
         </footer>
       </div>
       <div className={styles.auth_container}>
+        <Image 
+          src="/Minels-icon.png" 
+          alt="Logo" 
+          width={50}
+          height={50} 
+        />
         {children}
       </div>
     </div>

@@ -492,8 +492,6 @@ export const generateSalesAnalytics = async () => {
   const endOfThirdWeek = moment().subtract(1, 'weeks')
   const endOfFourthWeek = moment()
 
-  console.log(endOfFirstWeek, endOfSecondWeek, endOfThirdWeek, endOfFourthWeek)
-
   for (let i = 0; i < data.length; i++) {
     const dataMoment = moment(data[i].created_at);
 
@@ -519,6 +517,7 @@ export const getHighestDebts = async () => {
 
   let q = query(
     customersCollection,
+    where("author", "==", user.uid),
     limit(5),
     orderBy('debt', 'desc')
   );
