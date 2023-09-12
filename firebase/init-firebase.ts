@@ -65,10 +65,10 @@ export const loadProducts = async (
   let q = query(
     productCol,
     where("author", "==", user.uid),
-    where("name_lower", ">=", search),
-    where("name_lower", "<=", search + "\uf8ff"),
+    // where("name_lower", ">=", search),
+    // where("name_lower", "<=", search + "\uf8ff"),
     orderBy("name_lower"),
-    limit(size),
+    // limit(size),
   );
 
   if (start) {
@@ -79,7 +79,7 @@ export const loadProducts = async (
   const countSnapshot = await getCountFromServer(q);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-  console.log(querySnapshot)
+  console.log(querySnapshot.docs)
 
   return {
     data: querySnapshot.docs.map((doc, index) => {
@@ -120,7 +120,7 @@ export const createProduct = async (values: any) => {
   }
 
   if (values.id) {
-    await setDoc(doc(db, "products", values.id), values);
+    await updateDoc(doc(db, "products", values.id), values);
   } else {
     await addDoc(collection(db, "products"), {
       name: values.name,

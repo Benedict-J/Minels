@@ -6,7 +6,7 @@ import styles from "./index.module.scss";
 interface InModalProps {
   title: string;
   open: boolean;
-  handleOpen: () => void | undefined;
+  handleOpen?: () => void | undefined;
   handleClose: () => void | undefined;
   loading: boolean;
   buttonClassName?: string;

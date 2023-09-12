@@ -1,13 +1,12 @@
 import MainLayout from "@/components/layout/MainLayout"
-import { Button, Col, Form, Input, InputNumber, Row, message } from "antd";
+import { Button, Col, Form, Input, Row, message } from "antd";
 
 import InTable, { DataTableRef } from "@/components/InTable";
 
 import styles from "./index.module.scss";
-import InModal from "@/components/InModal";
 import { createProduct, deleteProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
 import { useRef, useState } from "react";
-import { formatAmountCurrency } from "@/utils/format";
+import ModalForm from "@/components/products/common/ModalForm";
 
 const { Search } = Input;
 
@@ -90,8 +89,21 @@ export default function Products() {
       width: 200,
       render: (text: any) => (
         <>
-          <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Update</Button>
-          <Button danger onClick={(e) => handleDelete(e, text.id)}>Delete</Button>
+          <Button 
+            type="link" 
+            onClick={(e) => {
+              setId(text.id);
+              setOpen(true);
+            }}
+          >
+            Update
+          </Button>
+          <Button 
+            danger 
+            onClick={(e) => handleDelete(e, text.id)}
+          >
+            Delete
+          </Button>
         </>
       ),
       responsize: ['md']
@@ -107,74 +119,20 @@ export default function Products() {
           <Search placeholder="Search Products" style={{ width: "200px" }} onSearch={handleSearch} />
         </Col>
         <Col md={5} className={styles.button_container}>
-          <InModal 
-            title="Add Product" 
+          <ModalForm 
+            id={id} 
             open={open} 
-            handleOpen={handleOpen} 
-            handleClose={handleClose} 
-            loading={loadingForm}
-          >
-            <Form
-              labelCol={{ span: 4 }}
-              colon={false}
-              onFinish={handleFinish}
-              labelAlign="left"
-              size="small"
-              form={form}
-            >
-              <Form.Item
-                label="ID"
-                name="id"
-              >
-                <Input readOnly disabled />
-              </Form.Item>
-              <Form.Item
-                label="Name"
-                name="name"
-                rules={[{ required: true, message: "Name field cannot be empty" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Quantity"
-                name="quantity"
-                initialValue={0}
-                rules={id !== null? [] : [{ min: 0, type: "number", message: "Quantity must be more than or equal to 0" }]}
-              >
-                <InputNumber controls={false} className={styles.input_number} readOnly={id !== null} />
-              </Form.Item>
-              <Form.Item
-                label="Selling Price"
-                name="sell_price"
-                initialValue={0}
-                rules={[{ min: 0, type: "number", message: "Price must be more than or equal to 0" }]}
-              >
-                <InputNumber 
-                  min={0} 
-                  controls={false} 
-                  className={styles.input_number} 
-                  formatter={formatAmountCurrency} 
-                />
-              </Form.Item>
-              <Form.Item
-                label="Purchase Price"
-                name="buy_price"
-                initialValue={0}
-                rules={[{ min: 0, type: "number", message: "Price must be more than or equal to 0" }]}
-              >
-                <InputNumber 
-                  min={0} 
-                  controls={false} 
-                  className={styles.input_number}
-                  formatter={formatAmountCurrency} 
-                 />
-              </Form.Item>
-              <div className={styles.modal_action}>
-                <Button danger size="middle">Cancel</Button>
-                <Button type="primary" size="middle" htmlType="submit">Submit</Button>
-              </div>
-            </Form>
-          </InModal>
+            onClose={() => setOpen(false)}
+            onFinish={() => {
+              if (id) {
+                messageApi.success("Product has been successfully updated");
+              } else {
+                messageApi.success("Product has been successfully created");
+              }
+
+              tableRef.current?.reload();
+            }} 
+          />
         </Col>
       </Row>
       <InTable 
