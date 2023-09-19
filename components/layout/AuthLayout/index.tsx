@@ -26,6 +26,7 @@ export default function AuthLayout({
       </div>
       <div className={styles.auth_container}>
         <Image 
+          className={styles.logo}
           src="/Minels-icon.png" 
           alt="Logo" 
           width={50}

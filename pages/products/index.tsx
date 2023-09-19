@@ -1,7 +1,7 @@
 import MainLayout from "@/components/layout/MainLayout"
 import { Button, Col, Form, Input, Row, message } from "antd";
 
-import InTable, { DataTableRef } from "@/components/InTable";
+import InTable, { DataTableRef } from "@/components/common/InTable";
 
 import styles from "./index.module.scss";
 import { createProduct, deleteProduct, getProduct, loadProducts } from "@/firebase/init-firebase";
@@ -114,14 +114,19 @@ export default function Products() {
     <div className={styles.container}>
       {contextHandler}
       <h2>Products</h2>
-      <Row className={styles.header}>
+      <Row className={styles.header} gutter={[8, 8]}>
         <Col xs={24} md={19}>
-          <Search placeholder="Search Products" style={{ width: "200px" }} onSearch={handleSearch} />
+          <Search 
+            className={styles.search}
+            placeholder="Search Products" 
+            onSearch={handleSearch} 
+          />
         </Col>
-        <Col md={5} className={styles.button_container}>
+        <Col xs={24} md={5} className={styles.button_container}>
           <ModalForm 
             id={id} 
             open={open} 
+            fullWidth
             onClose={() => setOpen(false)}
             onFinish={() => {
               if (id) {

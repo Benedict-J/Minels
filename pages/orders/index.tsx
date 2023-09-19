@@ -12,8 +12,8 @@ import {
 } from "antd";
 
 import MainLayout from "@/components/layout/MainLayout";
-import InTable, { DataTableRef } from "@/components/InTable";
-import InModal from "@/components/InModal";
+import InTable, { DataTableRef } from "@/components/common/InTable";
+import InModal from "@/components/common/InModal";
 import ItemOrders from "./components/ItemOrders";
 import SelectCustomer from "@/components/orders/common/SelectCustomer";
 

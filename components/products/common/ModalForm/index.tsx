@@ -3,12 +3,13 @@ import { Button, Form, Input, InputNumber } from "antd"
 
 import styles from "./index.module.scss";
 import { useEffect, useState } from "react";
-import InModal from "@/components/InModal";
+import InModal from "@/components/common/InModal";
 import { createProduct, getProduct } from "@/firebase/init-firebase";
 
 export default function ModalForm({
   id,
   open,
+  fullWidth,
   onClose,
   onFinish
 }: any) {
@@ -49,6 +50,7 @@ export default function ModalForm({
       open={open}
       handleClose={handleClose}
       loading={loadingForm}
+      fullWidth
     >
       <Form
         labelCol={{ span: 4 }}

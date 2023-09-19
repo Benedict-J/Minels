@@ -60,25 +60,27 @@
 }
 
 @media(max-width: 992px) {
-  // .container {
-  //   .summary_row {
-  //     overflow-x: scroll;
-  //     grid-template-columns: 80% 80% 80%;
-  //   }
+  .container {
+    .summary_row {
+      overflow-x: scroll;
+      grid-template-columns: 80% 80% 80%;
+    }
 
-  //   .charts_row {
-  //     grid-template-columns: auto;
-  //     row-gap: 10px;
-  //   }
-  // }
+    .charts_row {
+      grid-template-columns: auto;
+      row-gap: 10px;
+    }
+  }
 
-  // .revenue_chart {
-  //   width: 120px !important;
-  //   height: 120px !important;
-  // }
+  .revenue_chart {
+    width: 120px !important;
+    height: 120px !important;
+  }
 
-  // .sales_chart {
-  //   width: 300px !important;
-  //   height: 150px !important;
-  // }
+  .sales_chart {
+    width: 300px !important;
+    height: 150px !important;
+  }
 }
+
+@media (max-width: 567px) {}

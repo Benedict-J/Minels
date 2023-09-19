@@ -8,10 +8,14 @@
     align-items: center;
     margin-bottom: 1rem;
 
-    .button_container {
-      display: flex !important;
-      justify-content: right;
+    .search {
+      width: 200px;
     }
+
+    // .button_container {
+    //   display: flex !important;
+    //   justify-content: right;
+    // }
   }
 }
 
@@ -23,4 +27,16 @@
   display: flex;
   justify-content: right;
   column-gap: 8px;
+}
+
+@media (max-width: 576px) {
+  .container {
+    .header {
+
+      .search,
+      .button_container {
+        width: 100%;
+      }
+    }
+  }
 }

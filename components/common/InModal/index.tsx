@@ -11,6 +11,7 @@ interface InModalProps {
   loading: boolean;
   buttonClassName?: string;
   width?: number | string;
+  fullWidth?: boolean;
   children?: React.ReactNode;
 }
 
@@ -22,12 +23,18 @@ export default function InModal(props: InModalProps) {
     handleClose = () => {},
     loading = false,
     width = 720,
+    fullWidth = false,
     children,
   } = props;
 
   return (
     <>
-      <Button className={styles.button} onClick={handleOpen}>
+      <Button 
+        className={styles.button} 
+        block={fullWidth} 
+        type="primary"
+        onClick={handleOpen}
+      >
         <PlusOutlined /> {title}
       </Button>
       <Modal

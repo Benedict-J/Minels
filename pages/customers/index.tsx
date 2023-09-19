@@ -1,9 +1,9 @@
 import MainLayout from "@/components/layout/MainLayout";
 import styles from "./index.module.scss";
 import { Col, Row, Input, Form, message, InputNumber, Button } from "antd";
-import InModal from "@/components/InModal";
+import InModal from "@/components/common/InModal";
 import { useRef, useState } from "react";
-import InTable, { DataTableRef } from "@/components/InTable";
+import InTable, { DataTableRef } from "@/components/common/InTable";
 import { createCustomer, deleteCustomer, loadCustomers } from "@/firebase/init-firebase";
 import { formatAmountCurrency } from "@/utils/format";
 
@@ -86,14 +86,14 @@ export default function Customers() {
       {contextHandler}
       <h2>Customers</h2>
       <Row className={styles.header}>
-        <Col span={20}>
+        <Col xs={24} md={19}>
           <Search
             placeholder="Search Customers"
             style={{ width: "200px" }}
             // onSearch={handleSearch}
           />
         </Col>
-        <Col span="4" className={styles.button_container}>
+        <Col xs={24} md={5} className={styles.button_container}>
           <InModal
             title="Add Customer"
             open={open}
