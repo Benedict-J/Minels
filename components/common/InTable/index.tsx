@@ -53,7 +53,7 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
     reload();
   }, [filter]);
 
-  console.log("list", list);
+  // console.log("list", list);
 
   useImperativeHandle(ref, () => ({
     reload,

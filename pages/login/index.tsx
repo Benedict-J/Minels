@@ -19,7 +19,7 @@ export default function Login() {
       messageApi.success('You have successfully signed in');
       router.push('/dashboard')
     } catch (e: any) {
-      console.log(e.message)
+      // console.log(e.message)
 
       switch (e.message) {
         case 'Firebase: Error (auth/wrong-password).':

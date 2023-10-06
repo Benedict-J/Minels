@@ -87,7 +87,7 @@ export default function Orders() {
             }))
           }
 
-          console.log(res)
+          // console.log(res)
 
           form.setFieldsValue(res);
         })

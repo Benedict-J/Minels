@@ -79,7 +79,7 @@ export const loadProducts = async (
   const countSnapshot = await getCountFromServer(q);
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-  console.log(querySnapshot.docs)
+  // console.log(querySnapshot.docs)
 
   return {
     data: querySnapshot.docs.map((doc, index) => {
@@ -225,7 +225,7 @@ export const createOrder = async (values: any) => {
 
       const newQuantity = itemDoc.data().quantity - item.quantity;
       const newSold = itemDoc.data().sold + item.quantity;
-      transaction.update(ref, { quantity: newQuantity });
+      transaction.update(ref, { quantity: newQuantity, sold: newSold });
     });
   });
 
@@ -456,7 +456,7 @@ export const generateRevenueStatistics = async () => {
   for (let i = 0; i < data.length; i++) {
     if (data[i].status === "UNPAID") {
       unpaidRevenue += data[i].total;
-      console.log(data[i].total)
+      // console.log(data[i].total)
     } else if (data[i].status === "PAID") {
       paidRevenue += data[i].total;
     }
