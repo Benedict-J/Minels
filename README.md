@@ -39,7 +39,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 # Minels
 
-The simple solution to your sales management system. 
+The simple solution to your inventory management system. 
 
 ![Alt Text](./public/images/dashboard_image.png)
 
