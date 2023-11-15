@@ -8,7 +8,7 @@ export default function AuthLayout({
     <div className={styles.home_container}>
       <div className={styles.cover_background}>
         <h1>Minels</h1>
-        <p>The minimal solution to your sales management system</p> 
+        <p>The minimal solution to your inventory management system</p> 
         <ul className={styles.features}>
           <li>
             Dashboard for reviewing your business health
