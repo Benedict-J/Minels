@@ -51,7 +51,7 @@ The simple solution to your sales management system.
 
 ### Overview
 
-Do you have a small business where customers frequently pay-later? This sales management system can tracks customer's unsettled payments, help you track inventory and generate analytical data using our dashboard.
+Do you have a small business where customers frequently pay-later? This inventory management system can tracks customer's unsettled payments, help you track inventory and generate analytical data using our dashboard.
 
 This project revolves around trust between customers and business owners and micro businesses can keep track of their revenues instead of using traditional tracking methods such as Excel spreadsheets.
 
