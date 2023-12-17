@@ -55,6 +55,7 @@ export default function Login() {
           type="primary" 
           block
           htmlType="submit"
+          size="large"
         >
           Login
         </Button>

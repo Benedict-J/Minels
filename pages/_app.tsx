@@ -5,6 +5,7 @@ import { ReactElement, ReactNode, useContext, useEffect } from "react";
 import "@/firebase/init-firebase";
 import { AuthContext, AuthProvider } from "@/context/auth";
 import { Noto_Sans } from "next/font/google";
+import Head from "next/head";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -21,6 +22,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <AuthProvider>
+      <Head>
+        <title>Minels</title>
+      </Head>
       <main className={notoSans.className}>
         {getLayout(<Component {...pageProps} />)}
       </main>

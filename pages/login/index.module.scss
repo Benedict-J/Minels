@@ -2,23 +2,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 100px;
+  justify-content: center;
   padding-inline: 100px;
   box-sizing: border-box;
-  width: 45vw;
+  width: inherit;
+  height: 100vh;
   animation: appear 1s ease-in-out;
 
   .form_title {
     text-align: left;
-    width: 100%;
+    max-width: 320px;
     margin-bottom: 20px;
+    width: 100%;
 
     h2 {
-      font-size: 24px;
+      font-size: 36px;
     }
   }
 
   .form {
+    max-width: 320px;
     width: 100%;
   }
 
