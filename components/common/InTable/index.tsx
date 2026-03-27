@@ -61,13 +61,14 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
   }));
 
   return (
-    <>
+    <div className={styles.tableShell}>
       <Table
         columns={columns}
         dataSource={list}
         pagination={false}
         loading={loading}
         size="small"
+        className={styles.table}
       />
       <Pagination
         className={styles.pagination}
@@ -76,7 +77,7 @@ export default forwardRef(function InTable(props: InTableProps, ref) {
         current={page}
         onChange={handlePageChange}
       />
-    </>
+    </div>
   );
 });
 

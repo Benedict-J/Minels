@@ -26,6 +26,10 @@ import {
 } from "@/firebase/init-firebase";
 
 import { formatAmountCurrency } from "@/utils/format";
+import {
+  FileTextOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -37,31 +41,38 @@ export default function Orders() {
   const [messageApi, contextHandler] = message.useMessage();
   const [open, setOpen] = useState(false);
 
-  const filterOrders = (changedValues: any, allValues: any) => {
+  const filterOrders = (changedValues: any) => {
     if (changedValues.customer) {
-      tableRef.current?.setFilter((prev: any) => ({ ...prev, customer: changedValues.customer.id }));
+      tableRef.current?.setFilter((prev: any) => ({
+        ...prev,
+        customer: changedValues.customer.id,
+      }));
     } else if (changedValues.status) {
-      tableRef.current?.setFilter((prev: any) => ({ ...prev, status: changedValues.status }));
+      tableRef.current?.setFilter((prev: any) => ({
+        ...prev,
+        status: changedValues.status,
+      }));
     }
-  }
+  };
 
-  const handleFinish = (values: any) => {
+  const handleFinish = async (values: any) => {
     setLoadingForm(true);
 
     try {
       if (id) {
-        updateOrderStatus(id, values.status)
+        await updateOrderStatus(id, values.status);
         messageApi.success("Order has been successfully updated");
       } else {
-        createOrder(values);
+        await createOrder(values);
         messageApi.success("Order has been successfully created");
       }
-      
-      setLoadingForm(false);
+
       handleClose();
       tableRef.current?.reload();
     } catch (e) {
-      console.log(e)
+      console.log(e);
+    } finally {
+      setLoadingForm(false);
     }
   };
 
@@ -69,13 +80,13 @@ export default function Orders() {
     console.log(errorFields);
   };
 
-  const handleOpen = (e?: any, id?: string): void => {
-    if (id) {
+  const handleOpen = (e?: any, nextId?: string): void => {
+    if (nextId) {
       setLoadingForm(true);
-      setId(id);
+      setId(nextId);
 
-      getOrder(id)
-        .then(res => {
+      getOrder(nextId)
+        .then((res) => {
           res = {
             ...res,
             items: res?.items.map((item: any) => ({
@@ -83,11 +94,9 @@ export default function Orders() {
               name: item.name,
               quantity: item.quantity,
               sell_price: item.sell_price,
-              buy_price: item.buy_price
-            }))
-          }
-
-          // console.log(res)
+              buy_price: item.buy_price,
+            })),
+          };
 
           form.setFieldsValue(res);
         })
@@ -107,131 +116,171 @@ export default function Orders() {
 
   const columns = [
     {
-      title: "ID",
+      title: "Order ID",
       dataIndex: "id",
-      width: 200
+      width: 220,
     },
     {
       title: "Items",
       dataIndex: "items",
-      width: 200,
-      responsive: ['lg'],
-      render: (text: any) => {
-        return (
-          <Text ellipsis={true}>
-            {text.map(
-              (item: any, index: any) =>
-                item.name + (text.length - 1 === index ? "" : ", "),
-            )}
-          </Text>
-        );
-      },
+      width: 260,
+      responsive: ["lg"],
+      render: (text: any) => (
+        <Text ellipsis>
+          {text.map(
+            (item: any, index: any) =>
+              item.name + (text.length - 1 === index ? "" : ", ")
+          )}
+        </Text>
+      ),
     },
     {
       title: "Customer",
-      dataIndex: ['customer', 'name'],
-      width: 150,
-      responsive: ['lg']
+      dataIndex: ["customer", "name"],
+      width: 180,
+      responsive: ["lg"],
     },
     {
       title: "Status",
       dataIndex: "status",
-      width: 100,
-      responsive: ['lg']
+      width: 120,
+      render: (value: string) => (
+        <span
+          className={
+            value === "PAID" ? styles.statusPaid : styles.statusUnpaid
+          }
+        >
+          {value === "PAID" ? "Paid" : "Unpaid"}
+        </span>
+      ),
     },
     {
-      title: "Action",
-      width: 100,
+      title: "",
+      width: 120,
       render: (text: any) => (
-        <>
-          <Button type="link" onClick={(e) => handleOpen(e, text.id)}>Details</Button>
-        </>
-      )
-    }
+        <Button type="link" onClick={(e) => handleOpen(e, text.id)}>
+          Details
+        </Button>
+      ),
+    },
   ];
 
   return (
-    <div className={styles.container}>
-      <h2>Orders</h2>
-      <Row className={styles.header}>
-        <Col span={20}>
-          <Form
-            onValuesChange={filterOrders}
-            style={{ display: 'flex', gap: 10 }}
-          >
-            <SelectCustomer 
-              label={null} 
-              noStyle={true}
-              className={styles.select}
-              placeholder="Filter customer"
-            />
-            <Form.Item name="status" noStyle>
-              <Select 
-                className={styles.filter_status} 
-                placeholder="Filter status"
-                options={[ 
-                  { value: "All", label: "All" },
-                  { value: "UNPAID", label: "Unpaid" },
-                  { value: "PAID", label: "Paid" }
-                ]} 
+    <div className={styles.page}>
+      {contextHandler}
+
+      <section className={styles.hero}>
+        <div>
+          <p className={styles.eyebrow}>Orders</p>
+          <h1>Manage orders</h1>
+        </div>
+      </section>
+
+      <section className={styles.panel}>
+        <div className={styles.toolbar}>
+          <div className={styles.toolbarCopy}>
+            <p className={styles.sectionLabel}>Order list</p>
+          </div>
+
+          <div className={styles.toolbarFilters}>
+            <Form onValuesChange={filterOrders} className={styles.filterForm}>
+              <SelectCustomer
+                label={null}
+                noStyle
+                className={styles.select}
+                placeholder="Filter customer"
               />
-            </Form.Item>
-          </Form>
-        </Col>
-        <Col span="auto" className={styles.button_container}>
-          <InModal
-            title="Add Orders"
-            open={open}
-            handleOpen={handleOpen}
-            handleClose={handleClose}
-            loading={false}
-          >
-            <Form
-              labelCol={{ span: 4 }}
-              onFinish={handleFinish}
-              onFinishFailed={handleFinishFailed}
-              colon={false}
-              labelAlign="left"
-              size="small"
-              form={form}
-            >
-              <Form.Item label="ID" name="id">
-                <Input readOnly disabled />
-              </Form.Item>
-              <Form.Item label="Status" name="status">
-                <Select 
-                  disabled={id !== null && form.getFieldValue('status') === 'PAID'}
-                  options={[ 
+              <Form.Item name="status" noStyle>
+                <Select
+                  className={styles.filterStatus}
+                  placeholder="Filter status"
+                  options={[
+                    { value: "All", label: "All" },
                     { value: "UNPAID", label: "Unpaid" },
-                    { value: "PAID", label: "Paid" }
-                  ]} 
+                    { value: "PAID", label: "Paid" },
+                  ]}
                 />
               </Form.Item>
-              <SelectCustomer disabled={id !== null} />
-              <ItemOrders disabled={id !== null} />
-              <div className={styles.order_summary}>
-                <Form.Item label="Total Price" name="total">
-                  <InputNumber
-                    className={styles.summary_details}
-                    bordered={false}
-                    readOnly
-                    formatter={formatAmountCurrency}
-                  />
-                </Form.Item>
-              </div>
-              <div className={styles.modal_action}>
-                <Button danger size="middle">
-                  Cancel
-                </Button>
-                <Button type="primary" size="middle" htmlType="submit">
-                  Submit
-                </Button>
-              </div>
             </Form>
-          </InModal>
-        </Col>
-      </Row>
-      <InTable api={loadOrders} columns={columns} ref={tableRef} />
+
+            <InModal
+              title={id ? "Order details" : "Add order"}
+              open={open}
+              handleOpen={handleOpen}
+              handleClose={handleClose}
+              loading={false}
+              buttonText={
+                <span className={styles.addOrderButtonText}>
+                  <PlusOutlined />
+                  <span>New order</span>
+                </span>
+              }
+            >
+              <div className={styles.modalIntro}>
+                <FileTextOutlined />
+                <div>
+                  <strong>{id ? "Update order" : "New order"}</strong>
+                </div>
+              </div>
+
+              <Form
+                layout="vertical"
+                onFinish={handleFinish}
+                onFinishFailed={handleFinishFailed}
+                size="middle"
+                form={form}
+              >
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item label="ID" name="id">
+                      <Input readOnly disabled />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item label="Status" name="status">
+                      <Select
+                        disabled={id !== null && form.getFieldValue("status") === "PAID"}
+                        options={[
+                          { value: "UNPAID", label: "Unpaid" },
+                          { value: "PAID", label: "Paid" },
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <SelectCustomer disabled={id !== null} />
+                <ItemOrders disabled={id !== null} />
+
+                <div className={styles.orderSummary}>
+                  <div className={styles.summaryLabel}>Order total</div>
+                  <Form.Item label={null} name="total" className={styles.summaryField}>
+                    <InputNumber
+                      className={styles.summaryDetails}
+                      bordered={false}
+                      readOnly
+                      formatter={formatAmountCurrency}
+                    />
+                  </Form.Item>
+                </div>
+
+                <div className={styles.modalAction}>
+                  <Button onClick={handleClose} size="middle">
+                    Cancel
+                  </Button>
+                  <Button type="primary" size="middle" htmlType="submit" loading={loadingForm}>
+                    {id ? "Update order" : "Submit order"}
+                  </Button>
+                </div>
+              </Form>
+            </InModal>
+          </div>
+        </div>
+
+        <div className={styles.tableCard}>
+          <InTable api={loadOrders} columns={columns} ref={tableRef} />
+        </div>
+      </section>
     </div>
   );
 }

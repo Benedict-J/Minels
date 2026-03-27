@@ -1,5 +1,57 @@
+.tableShell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.table {
+  :global(.ant-table) {
+    background: transparent;
+  }
+
+  :global(.ant-table-container) {
+    border: 1px solid rgba(7, 32, 63, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  :global(.ant-table-thead > tr > th) {
+    padding: 14px 18px;
+    background: #f8fafb !important;
+    border-bottom: 1px solid rgba(7, 32, 63, 0.08);
+    color: #667085;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :global(.ant-table-tbody > tr > td) {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(7, 32, 63, 0.05);
+    color: #0f172a;
+    background: #ffffff;
+    vertical-align: middle;
+  }
+
+  :global(.ant-table-tbody > tr:hover > td) {
+    background: #fbfcfd !important;
+  }
+
+  :global(.ant-table-tbody > tr:last-child > td) {
+    border-bottom: none;
+  }
+
+  :global(.ant-table-cell-row-hover) {
+    background: #fbfcfd !important;
+  }
+
+  :global(.ant-table-placeholder .ant-empty) {
+    margin-block: 24px;
+  }
+}
+
 .pagination {
   width: fit-content;
-  margin-inline: auto;
-  margin-top: 1rem;
+  margin-left: auto;
 }
