@@ -1,8 +1,7 @@
 import MainLayout from "@/components/layout/MainLayout";
-
+import RootLayout from "@/components/layout/RootLayout";
 import styles from "./index.module.scss";
-import { Card, List, Statistic } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   generateRevenueStatistics,
   generateSalesAnalytics,
@@ -13,21 +12,35 @@ import {
   getPopularItems,
 } from "@/firebase/init-firebase";
 import { formatAmountCurrency } from "@/utils/format";
-import { Doughnut, Line, Pie } from "react-chartjs-2";
-import { ArcElement, CategoryScale, Chart, Legend, LineElement, LinearScale, PointElement, Tooltip } from "chart.js";
-import { htmlLegendPlugin } from "@/utils/chart";
-import RootLayout from "@/components/layout/RootLayout";
+import { Doughnut, Line } from "react-chartjs-2";
+import {
+  ArcElement,
+  CategoryScale,
+  Chart,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+} from "chart.js";
 import { endOfFirstWeek, endOfFourthWeek, endOfSecondWeek, endOfThirdWeek } from "@/utils/date";
+import {
+  ArrowUpOutlined,
+  DollarOutlined,
+  RiseOutlined,
+  ShoppingOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 Chart.register(
-  ArcElement, 
+  ArcElement,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  Tooltip, 
+  Tooltip,
   Legend
-)
+);
 
 interface DashboardData {
   totalRevenue: number;
@@ -39,78 +52,107 @@ interface DashboardData {
   highestDebts: any[];
 }
 
+const emptyDashboard: DashboardData = {
+  totalRevenue: 0,
+  totalSales: 0,
+  popularItems: [],
+  totalProfit: 0,
+  revenueStatistics: [0, 0],
+  salesStatistics: [0, 0, 0, 0],
+  highestDebts: [],
+};
+
 export default function Dashboard() {
-  const [data, setData] = useState<DashboardData>({
-    totalRevenue: 0,
-    totalSales: 0,
-    popularItems: [],
-    totalProfit: 0,
-    revenueStatistics: [0, 0],
-    salesStatistics: [0, 0, 0, 0],
-    highestDebts: []
-  });
+  const [data, setData] = useState<DashboardData>(emptyDashboard);
 
-  const revenueChartData = {
-    labels: [
-      'Unpaid',
-      'Paid'
-    ],
-    datasets: [
-      {
-        data: data.revenueStatistics,
-        backgroundColor: [
-          '#001529',
-          '#f0f0f0'
-        ],
-        weight: 1
-      }
-    ]
-  }
-  
-  const revenueChartPlugin = {
-    plugins: {
-      htmlLegend: {
-        containerID: 'legend-container'
+  const revenueChartData = useMemo(
+    () => ({
+      labels: ["Unpaid", "Paid"],
+      datasets: [
+        {
+          data: data.revenueStatistics,
+          backgroundColor: ["#07203f", "#d7e3e0"],
+          borderWidth: 0,
+          hoverOffset: 6,
+        },
+      ],
+    }),
+    [data.revenueStatistics]
+  );
+
+  const revenueChartOptions = useMemo(
+    () => ({
+      cutout: "72%",
+      plugins: {
+        legend: {
+          display: false,
+        },
       },
-      legend: {
-        display: false,
-      }, 
-    },
-  }
+    }),
+    []
+  );
 
-  const salesChartData = {
-    labels: [endOfFirstWeek, endOfSecondWeek, endOfThirdWeek, endOfFourthWeek],
-    datasets: [
-      {
-        data: data.salesStatistics,
-        borderColor: '#001529',
-      }
-    ]
-  }
+  const salesChartData = useMemo(
+    () => ({
+      labels: [endOfFirstWeek, endOfSecondWeek, endOfThirdWeek, endOfFourthWeek],
+      datasets: [
+        {
+          data: data.salesStatistics,
+          borderColor: "#0f766e",
+          backgroundColor: "rgba(15, 118, 110, 0.12)",
+          fill: true,
+          tension: 0.35,
+          pointRadius: 4,
+          pointHoverRadius: 5,
+        },
+      ],
+    }),
+    [data.salesStatistics]
+  );
 
-  const salesChartOption = {
-    responsive: true,      
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 20000
-        }
+  const salesChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: "rgba(15, 23, 42, 0.08)",
+          },
+          ticks: {
+            stepSize: 20000,
+          },
+        },
+        x: {
+          grid: {
+            display: false,
+          },
+        },
       },
-      x: {
-        grid: {
-          display: false
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        display: false
-      }
-    }
-  }
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+    }),
+    []
+  );
 
-  const fetch = async () => {
+  const revenueBreakdown = [
+    {
+      label: "Unpaid",
+      value: data.revenueStatistics[0] || 0,
+      tone: styles.toneDark,
+    },
+    {
+      label: "Paid",
+      value: data.revenueStatistics[1] || 0,
+      tone: styles.toneSoft,
+    },
+  ];
+
+  const fetchDashboard = async () => {
     const totalRevenue = await generateTotalRevenue();
     const totalSales = await generateTotalSales();
     const popularItems = await getPopularItems();
@@ -120,98 +162,162 @@ export default function Dashboard() {
     const highestDebts = await getHighestDebts();
 
     setData({
-      totalRevenue: totalRevenue,
-      totalSales: totalSales,
-      popularItems: popularItems,
-      totalProfit: totalProfit,
-      revenueStatistics: revenueStatistics,
+      totalRevenue,
+      totalSales,
+      popularItems,
+      totalProfit,
+      revenueStatistics,
       salesStatistics: salesAnalytics,
-      highestDebts: highestDebts
+      highestDebts,
     });
   };
 
   useEffect(() => {
-    fetch();
+    fetchDashboard();
   }, []);
 
   return (
-    <div className={styles.container}>
-      <h2>Overview</h2>
-      <div className={styles.summary_row}>
-        <Card
-          className={styles.card_statistics}
-          bodyStyle={{ padding: 10 }}
-          size="small"
-        >
-          <Statistic title="Total Revenue" value={formatAmountCurrency(data.totalRevenue)} valueStyle={{ fontWeight: 700 }} />
-        </Card>
-        <Card
-          className={styles.card_statistics}
-          bodyStyle={{ padding: 10 }}
-          size="small"
-        >
-          <Statistic title="Total Items Sold" value={data.totalSales} valueStyle={{ fontWeight: 700 }} />
-        </Card>
-        <Card
-          className={styles.card_statistics}
-          // bodyStyle={{ padding: 10 }}
-          size="small"
-        >
-          <Statistic title="Total Profit" value={formatAmountCurrency(data.totalProfit)} valueStyle={{ fontWeight: 700 }} />
-        </Card>
-      </div>
-      <div className={styles.charts_row}>
-        <Card
-          bodyStyle={{ padding: 10 }}
-          size="small"
-        >
-          <div className={styles.card_title}>Revenue Statistics</div>
-          <div className={styles.row_center}>
-            <Doughnut 
-              className={styles.revenue_chart}
-              data={revenueChartData}
-              options={revenueChartPlugin}
-              plugins={[htmlLegendPlugin]}
-            />
-            <div id="legend-container"></div>
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <div>
+          <p className={styles.eyebrow}>Dashboard</p>
+          <h1>Overview</h1>
+          <p className={styles.lead}>A quick read on revenue, sales, and customer risk.</p>
+        </div>
+        <div className={styles.heroCallout}>
+          <span>Monthly focus</span>
+          <strong>{formatAmountCurrency(data.totalRevenue)}</strong>
+          <p>Revenue tracked across paid and unpaid order flow.</p>
+        </div>
+      </section>
+
+      <section className={styles.statsGrid}>
+        <article className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <DollarOutlined />
           </div>
-        </Card>
-        <Card
-          bodyStyle={{ padding: 10 }}
-          size="small"
-        >
-          <div className={styles.card_title}>Sales Analytics</div>
-          <Line 
-            className={styles.sales_chart}
-            data={salesChartData}
-            options={salesChartOption}
-          />
-        </Card>
-      </div>
-      <div className={styles.list_statistics_row}>
-        <List
-          size="small"
-          header={<div>Best selling items</div>}
-          dataSource={data.popularItems}
-          renderItem={(item) => (
-            <List.Item>
-              <div>{item.name}</div>
-              <div>{item.sold}</div>
-            </List.Item>
-          )}
-        />
-        <List
-          size="small"
-          header={<div>Highest Debts</div>}
-          dataSource={data.highestDebts}
-          renderItem={(item) => (
-            <List.Item>
-              <div>{item.name}</div>
-              <div>{formatAmountCurrency(item.debt)}</div>
-            </List.Item>
-          )}
-        />
-      </div>
+          <div>
+            <p>Total Revenue</p>
+            <strong>{formatAmountCurrency(data.totalRevenue)}</strong>
+          </div>
+        </article>
+
+        <article className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <ShoppingOutlined />
+          </div>
+          <div>
+            <p>Total Items Sold</p>
+            <strong>{data.totalSales}</strong>
+          </div>
+        </article>
+
+        <article className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <RiseOutlined />
+          </div>
+          <div>
+            <p>Total Profit</p>
+            <strong>{formatAmountCurrency(data.totalProfit)}</strong>
+          </div>
+        </article>
+      </section>
+
+      <section className={styles.analyticsGrid}>
+        <article className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.panelEyebrow}>Revenue Mix</p>
+              <h2>Paid vs unpaid revenue</h2>
+            </div>
+          </div>
+
+          <div className={styles.donutLayout}>
+            <div className={styles.donutWrap}>
+              <Doughnut data={revenueChartData} options={revenueChartOptions} />
+            </div>
+
+            <div className={styles.legendList}>
+              {revenueBreakdown.map((item) => (
+                <div key={item.label} className={styles.legendItem}>
+                  <div className={styles.legendTop}>
+                    <span className={`${styles.legendDot} ${item.tone}`} />
+                    <span>{item.label}</span>
+                  </div>
+                  <strong>{formatAmountCurrency(item.value)}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        </article>
+
+        <article className={`${styles.panel} ${styles.panelWide}`}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.panelEyebrow}>Sales Trend</p>
+              <h2>Weekly sales analytics</h2>
+            </div>
+          </div>
+
+          <div className={styles.lineChartWrap}>
+            <Line data={salesChartData} options={salesChartOptions} />
+          </div>
+        </article>
+      </section>
+
+      <section className={styles.insightGrid}>
+        <article className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.panelEyebrow}>Best Sellers</p>
+              <h2>Items moving fastest</h2>
+            </div>
+            <ArrowUpOutlined className={styles.headerIcon} />
+          </div>
+
+          <div className={styles.listBlock}>
+            {data.popularItems.length ? (
+              data.popularItems.map((item) => (
+                <div key={item.name} className={styles.listRow}>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p>Units sold</p>
+                  </div>
+                  <span>{item.sold}</span>
+                </div>
+              ))
+            ) : (
+              <p className={styles.emptyState}>No item activity yet.</p>
+            )}
+          </div>
+        </article>
+
+        <article className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.panelEyebrow}>Customer Risk</p>
+              <h2>Highest outstanding debts</h2>
+            </div>
+            <TeamOutlined className={styles.headerIcon} />
+          </div>
+
+          <div className={styles.listBlock}>
+            {data.highestDebts.length ? (
+              data.highestDebts.map((item) => (
+                <div key={item.name} className={styles.listRow}>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p>Outstanding balance</p>
+                  </div>
+                  <span>{formatAmountCurrency(item.debt)}</span>
+                </div>
+              ))
+            ) : (
+              <p className={styles.emptyState}>No customer debt recorded yet.</p>
+            )}
+          </div>
+        </article>
+      </section>
     </div>
   );
 }

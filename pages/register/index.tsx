@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function Register() {
   const router = useRouter();
-  const { registerWithEmail, authError } = useContext(AuthContext);
+  const { registerWithEmail } = useContext(AuthContext);
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleFinish = async (values: any) => {
@@ -21,11 +21,15 @@ export default function Register() {
       messageApi.success('You have successfully registered!');
       router.push('/dashboard')
     } catch (e: any) {
+      if (!e?.message) {
+        return;
+      }
+
       switch (e.code) {
         case 'auth/email-already-in-use':
           return message.error('Email is already in use');
         default:
-          return message.error(e.message || authError || 'Unable to register right now.');
+          return message.error(e.message);
       }
     }
   }
@@ -36,7 +40,6 @@ export default function Register() {
       <div className={styles.form_title}>
         <h2>Registration</h2>
         <p>Create your account and start tracking inventory with a cleaner workflow.</p>
-        {authError ? <p className={styles.form_error}>{authError}</p> : null}
       </div>
       <Form 
         layout="vertical" 

@@ -15,10 +15,10 @@ export default function AuthLayout({
         <div className={styles.brand}>
           <Link href="/" className={styles.homeLink}>
             <Image
-              src="/Minels-icon.png"
+              src="/minels-logo.svg"
               alt="Minels logo"
-              width={42}
-              height={42}
+              width={40}
+              height={40}
             />
             <span>Minels</span>
           </Link>

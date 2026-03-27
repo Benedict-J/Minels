@@ -8,7 +8,7 @@ import Link from "next/link"
 
 export default function ForgotPassword() {
   const router = useRouter();
-  const { forgotPassword, authError } = useContext(AuthContext);
+  const { forgotPassword } = useContext(AuthContext);
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleFinish = async (values: any) => {
@@ -16,7 +16,11 @@ export default function ForgotPassword() {
       await forgotPassword(values.email)
       router.push('/forgot-password/email-sent')
     } catch (e: any) {
-      messageApi.error(e.message || authError || "Unable to reset password right now.")
+      if (!e?.message) {
+        return;
+      }
+
+      messageApi.error(e.message)
     }
   }
 
@@ -26,7 +30,6 @@ export default function ForgotPassword() {
       <div className={styles.form_title}>
         <h2>Forgot Password</h2>
         <p>Enter your email and we&apos;ll send you a reset link.</p>
-        {authError ? <p className={styles.form_error}>{authError}</p> : null}
       </div>
       <Form
         layout="vertical"

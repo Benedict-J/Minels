@@ -1,6 +1,6 @@
 import { User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
-import { auth, firebaseConfigError } from "@/firebase/init-firebase";
+import { auth } from "@/firebase/init-firebase";
 
 interface IAuthContext {
   currentUser: User | null
@@ -8,7 +8,6 @@ interface IAuthContext {
   logout: any,
   registerWithEmail: any,
   forgotPassword: any,
-  authError: string | null,
 }
 
 export const AuthContext = createContext<IAuthContext>({
@@ -17,7 +16,6 @@ export const AuthContext = createContext<IAuthContext>({
   logout: () => null,
   registerWithEmail: () => null,
   forgotPassword: () => null,
-  authError: null,
 });
 
 export const AuthProvider = ({ children }: any) => {
@@ -25,7 +23,7 @@ export const AuthProvider = ({ children }: any) => {
   const [loading, setLoading] = useState(true);
 
   const getMissingConfigError = () =>
-    Promise.reject(new Error(firebaseConfigError || "Firebase is not configured."));
+    Promise.reject(new Error("Firebase auth is unavailable."));
 
   const registerWithEmail = ({ email, password}: any) =>
     auth ? createUserWithEmailAndPassword(auth, email, password) : getMissingConfigError();
@@ -58,8 +56,8 @@ export const AuthProvider = ({ children }: any) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail, forgotPassword, authError: firebaseConfigError }}>
-      {loading? null : children}
+    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail, forgotPassword }}>
+      {loading ? null : children}
     </AuthContext.Provider>
   )
 }
