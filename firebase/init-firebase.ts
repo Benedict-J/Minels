@@ -1,6 +1,6 @@
 import "firebase/firestore";
 
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import {
   getFirestore,
   getDocs,
@@ -25,6 +25,21 @@ import {
 import moment from "moment";
 import { getAuth } from "firebase/auth";
 
+const requiredEnvVars = [
+  "NEXT_PUBLIC_FIREBASE_API_KEY",
+  "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+  "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+  "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+  "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+  "NEXT_PUBLIC_FIREBASE_APP_ID",
+] as const;
+
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+export const firebaseConfigError =
+  missingEnvVars.length > 0
+    ? `Missing Firebase environment variables: ${missingEnvVars.join(", ")}`
+    : null;
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -32,11 +47,16 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const app = firebaseConfigError
+  ? null
+  : getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
 
 
 export const loadProducts = async (
@@ -44,9 +64,9 @@ export const loadProducts = async (
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return {
       data: [],
       next: null,
@@ -94,9 +114,9 @@ export const loadProducts = async (
 };
 
 export const getProduct = async (id: string) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return;
   }
 
@@ -113,9 +133,9 @@ export const getProduct = async (id: string) => {
 };
 
 export const createProduct = async (values: any) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return;
   }
 
@@ -135,6 +155,7 @@ export const createProduct = async (values: any) => {
 };
 
 export const deleteProduct = async (id: string) => {
+  if (!db) return;
   await deleteDoc(doc(db, "products", id));
 };
 
@@ -143,9 +164,9 @@ export const loadOrders = async (
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return {
       data: [],
       next: null,
@@ -187,8 +208,8 @@ export const loadOrders = async (
 };
 
 export const getOrder = async (id: string) => {
-  const user = auth.currentUser;
-  if (!user) return {};
+  const user = auth?.currentUser;
+  if (!user || !db) return {};
   
   const docRef = doc(db, "orders", id);
   const docSnap = await getDoc(docRef);
@@ -203,8 +224,8 @@ export const getOrder = async (id: string) => {
 }
 
 export const createOrder = async (values: any) => {
-  const user = auth.currentUser;
-  if (!user) return;
+  const user = auth?.currentUser;
+  if (!user || !db) return;
 
   await addDoc(collection(db, "orders"), {
     total: values.total,
@@ -245,12 +266,13 @@ export const createOrder = async (values: any) => {
 };
 
 export const deleteCustomer = async (id: string) => {
+  if (!db) return;
   await deleteDoc(doc(db, "customers", id))
 }
 
 export const updateOrderStatus = async (id: string, status: string) => {
-  const user = auth.currentUser;
-  if (!user) return;
+  const user = auth?.currentUser;
+  if (!user || !db) return;
 
   await updateDoc(doc(db, "orders", id), {
     status: status
@@ -262,9 +284,9 @@ export const loadCustomers = async (
   size: number = 10,
   start: QueryDocumentSnapshot<DocumentData, DocumentData> | null = null,
 ) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return {
       data: [],
       next: null,
@@ -309,8 +331,8 @@ export const loadCustomers = async (
 }
 
 export const createCustomer = async (values: any) => {
-  const user = auth.currentUser;
-  if (!user) return;
+  const user = auth?.currentUser;
+  if (!user || !db) return;
 
   await addDoc(collection(db, "customers"), {
     name: values.name,
@@ -323,8 +345,8 @@ export const createCustomer = async (values: any) => {
 // Dashboard APIs
 
 export const generateTotalRevenue = async () => {
-  const user = auth.currentUser;
-  if (!user) return 0;
+  const user = auth?.currentUser;
+  if (!user || !db) return 0;
 
   const ordersCollection = collection(db, "orders");
 
@@ -349,8 +371,8 @@ export const generateTotalRevenue = async () => {
 };
 
 export const generateTotalSales = async () => {
-  const user = auth.currentUser;
-  if (!user) return 0;
+  const user = auth?.currentUser;
+  if (!user || !db) return 0;
 
   const ordersCollection = collection(db, "orders");
 
@@ -382,8 +404,8 @@ export const generateTotalSales = async () => {
 };
 
 export const getPopularItems = async () => {
-  const user = auth.currentUser;
-  if (!user) return [];
+  const user = auth?.currentUser;
+  if (!user || !db) return [];
 
   const productsCollection = collection(db, "products");
 
@@ -401,8 +423,8 @@ export const getPopularItems = async () => {
 };
 
 export const generateTotalProfit = async () => {
-  const user = auth.currentUser;
-  if (!user) return 0;
+  const user = auth?.currentUser;
+  if (!user || !db) return 0;
 
   const ordersCollection = collection(db, "orders");
 
@@ -432,8 +454,8 @@ export const generateTotalProfit = async () => {
 }
 
 export const generateRevenueStatistics = async () => {
-  const user = auth.currentUser;
-  if (!user) return [0, 0];
+  const user = auth?.currentUser;
+  if (!user || !db) return [0, 0];
 
   const ordersCollection = collection(db, "orders");
 
@@ -466,8 +488,8 @@ export const generateRevenueStatistics = async () => {
 }
 
 export const generateSalesAnalytics = async () => {
-  const user = auth.currentUser;
-  if (!user) return [0, 0, 0, 0];
+  const user = auth?.currentUser;
+  if (!user || !db) return [0, 0, 0, 0];
 
   const ordersCollection = collection(db, "orders");
 
@@ -510,8 +532,8 @@ export const generateSalesAnalytics = async () => {
 }
 
 export const getHighestDebts = async () => {
-  const user = auth.currentUser;
-  if (!user) return [];
+  const user = auth?.currentUser;
+  if (!user || !db) return [];
 
   const customersCollection = collection(db, "customers");
 

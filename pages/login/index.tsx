@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 
 export default function Login() {
   const router = useRouter();
-  const { login } = useContext(AuthContext);
+  const { login, authError } = useContext(AuthContext);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -19,11 +19,11 @@ export default function Login() {
       messageApi.success('You have successfully signed in');
       router.push('/dashboard')
     } catch (e: any) {
-      // console.log(e.message)
-
       switch (e.message) {
         case 'Firebase: Error (auth/wrong-password).':
           return message.error('You have entered an invalid username or password');
+        default:
+          return message.error(e.message || authError || 'Unable to sign in right now.');
       }
     }
   }
@@ -33,6 +33,8 @@ export default function Login() {
       {contextHolder}
       <div className={styles.form_title}>
         <h2>Login</h2>
+        <p>Welcome back. Sign in to manage products, orders, and customer balances.</p>
+        {authError ? <p className={styles.form_error}>{authError}</p> : null}
       </div>
       <Form 
         layout="vertical" 

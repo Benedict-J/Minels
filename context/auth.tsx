@@ -1,8 +1,6 @@
 import { User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { auth } from "@/firebase/init-firebase";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { createContext, useEffect, useState } from "react";
+import { auth, firebaseConfigError } from "@/firebase/init-firebase";
 
 interface IAuthContext {
   currentUser: User | null
@@ -10,6 +8,7 @@ interface IAuthContext {
   logout: any,
   registerWithEmail: any,
   forgotPassword: any,
+  authError: string | null,
 }
 
 export const AuthContext = createContext<IAuthContext>({
@@ -17,26 +16,39 @@ export const AuthContext = createContext<IAuthContext>({
   login: () => null,
   logout: () => null,
   registerWithEmail: () => null,
-  forgotPassword: () => null
+  forgotPassword: () => null,
+  authError: null,
 });
 
 export const AuthProvider = ({ children }: any) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const registerWithEmail = ({ email, password}: any) => createUserWithEmailAndPassword(auth, email, password);
+  const getMissingConfigError = () =>
+    Promise.reject(new Error(firebaseConfigError || "Firebase is not configured."));
 
-  const login = ({ email, password }: any) => signInWithEmailAndPassword(auth, email, password);
+  const registerWithEmail = ({ email, password}: any) =>
+    auth ? createUserWithEmailAndPassword(auth, email, password) : getMissingConfigError();
+
+  const login = ({ email, password }: any) =>
+    auth ? signInWithEmailAndPassword(auth, email, password) : getMissingConfigError();
 
   const logout = () => {
     setCurrentUser(null)
+    if (!auth) return;
     signOut(auth)
     window.location.href = "/"
   };
 
-  const forgotPassword = (email: string) => sendPasswordResetEmail(auth, email)
+  const forgotPassword = (email: string) =>
+    auth ? sendPasswordResetEmail(auth, email) : getMissingConfigError();
   
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
@@ -46,7 +58,7 @@ export const AuthProvider = ({ children }: any) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail, forgotPassword }}>
+    <AuthContext.Provider value={{ currentUser, login, logout, registerWithEmail, forgotPassword, authError: firebaseConfigError }}>
       {loading? null : children}
     </AuthContext.Provider>
   )

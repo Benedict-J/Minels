@@ -6,9 +6,9 @@ export const loadProducts = async ({
   size = 10,
   start = null
 }) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return {
       data: [],
       next: null,
@@ -47,9 +47,9 @@ export const loadProducts = async ({
 }
 
 export const getProduct = async (id: string) => {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
 
-  if (!user) {
+  if (!user || !db) {
     return;
   }
 

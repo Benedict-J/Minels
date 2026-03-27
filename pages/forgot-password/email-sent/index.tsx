@@ -3,7 +3,7 @@ import styles from './index.module.scss'
 
 export default function EmailSent() {
   const redirectToLogin = () => {
-    window.location.href = '/'
+    window.location.href = '/login'
   }
 
   return (

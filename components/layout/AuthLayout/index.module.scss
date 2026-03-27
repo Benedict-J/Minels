@@ -1,81 +1,73 @@
-.home_container {
-  display: flex;
+.page {
+  min-height: 100vh;
+  position: relative;
   overflow: hidden;
-  width: 100vw;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(15, 118, 110, 0.2), transparent 26%),
+    radial-gradient(circle at 85% 12%, rgba(7, 32, 63, 0.18), transparent 28%),
+    linear-gradient(135deg, #f4ebdc 0%, #f8fbf9 55%, #e7f1ef 100%);
 }
 
-.cover_background {
-  min-width: 55%;
-  height: 100vh;
-  background: #001529;
-  box-sizing: border-box !important;
+.backdrop {
+  position: absolute;
+  inset: auto auto -140px -120px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(7, 32, 63, 0.08);
+  filter: blur(18px);
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-inline: 150px;
+  padding: 32px 20px;
+}
 
-  h1 {
-    color: white;
-    font-size: 48px;
-    margin-bottom: 0;
-  }
+.brand {
+  text-align: center;
+  margin-bottom: 24px;
 
   p {
-    color: white;
-    font-size: 24px;
-  }
-
-  .features {
-    color: white;
-    font-size: 18px;
-    padding-inline-start: 20px;
-
-    li {
-      margin-bottom: 10px;
-    }
+    margin: 14px 0 0;
+    color: #536174;
+    font-size: 1rem;
   }
 }
 
-.auth_container {
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-
-  .logo {
-    display: none;
-  }
-
-  h1 {
-    display: none;
-  }
+.homeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.04em;
 }
 
-.footer {
-  color: white;
+.card {
+  width: min(100%, 480px);
+  padding: 36px;
+  border: 1px solid rgba(7, 32, 63, 0.1);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 24px 60px rgba(7, 32, 63, 0.12);
 }
 
-@media (max-width: 992px) {
-  .cover_background {
-    padding-inline: 50px;
+@media (max-width: 576px) {
+  .shell {
+    padding: 20px 14px;
+  }
+
+  .card {
+    padding: 24px 20px;
+    border-radius: 22px;
   }
 }
-
-@media (max-width: 768px) {
-  .cover_background {
-    display: none;
-  }
-
-  .auth_container {
-    img {
-      display: block;
-      padding-top: 50px;
-      padding-inline: 50px;
-    }
-  }
-}
-
-// @media (max-width: 576px) {
-//   .cover_background {
-//     display: none;
-//   }
-// }
